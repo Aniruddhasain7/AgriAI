@@ -70,7 +70,6 @@ export default function Dashboard() {
 
   return (
     <div>
-      {/* Hero Banner */}
       <section
         className="glass-card hero-card"
         style={{
@@ -94,7 +93,8 @@ export default function Dashboard() {
             letterSpacing: "-1px",
           }}
         >
-          Empowering Farmers with <span style={{ color: "var(--primary-500)" }}>AI Intelligence</span>
+          Empowering Farmers with{" "}
+          <span style={{ color: "var(--primary-500)" }}>AI Intelligence</span>
         </h1>
 
         <p
@@ -105,46 +105,58 @@ export default function Dashboard() {
             color: "var(--text-muted)",
           }}
         >
-          Precision machine learning tools for crop disease identification, yield estimation,
-          soil nutrient balance, and real-time market insights.
+          Precision machine learning tools for crop disease identification,
+          yield estimation, soil nutrient balance, and real-time market
+          insights.
         </p>
 
-        {/* Quick Stats Pill Bar */}
         <div
           style={{
-            display: "inline-flex",
+            display: "flex",
             alignItems: "center",
             gap: "24px",
-            background: "var(--bg-input)",
-            border: "1px solid var(--border-color)",
-            padding: "12px 24px",
-            borderRadius: "var(--radius-full)",
             fontSize: "14px",
             fontWeight: 600,
             flexWrap: "wrap",
             justifyContent: "center",
+            marginTop: "16px",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <ShieldCheck size={18} style={{ color: "var(--primary-500)" }} />
-            <span>MobileNetV2 Plant Diagnosis</span>
+            <span>Plant Disease Diagnosis</span>
           </div>
-          <div style={{ width: "1px", height: "16px", background: "var(--border-color)" }} />
+          <div
+            className="desktop-only"
+            style={{
+              width: "1px",
+              height: "16px",
+              background: "var(--border-color)",
+            }}
+          />
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <TrendingUp size={18} style={{ color: "var(--primary-400)" }} />
-            <span>FAO Real Dataset Yield Model</span>
+            <span>Crop Yield Prediction</span>
           </div>
-          <div style={{ width: "1px", height: "16px", background: "var(--border-color)" }} />
+          <div
+            className="desktop-only"
+            style={{
+              width: "1px",
+              height: "16px",
+              background: "var(--border-color)",
+            }}
+          />
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <Bot size={18} style={{ color: "var(--accent-lime)" }} />
-            <span>AgriAI Multilingual Assistant</span>
+            <span>Multilingual Assistant</span>
           </div>
         </div>
       </section>
 
-      {/* Feature Cards Grid */}
       <section>
-        <h2 style={{ fontSize: "24px", marginBottom: "24px", textAlign: "left" }}>
+        <h2
+          style={{ fontSize: "24px", marginBottom: "24px", textAlign: "left" }}
+        >
           Agricultural Decision Tools
         </h2>
 

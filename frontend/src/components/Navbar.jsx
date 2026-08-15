@@ -62,7 +62,6 @@ export default function Navbar() {
           gap: "12px",
         }}
       >
-        {/* Left Side: Brand Logo (+ Dashboard Button ONLY when authenticated) */}
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
           <Link
             to={isAuthenticated ? "/dashboard" : "/"}
@@ -140,7 +139,6 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Right Side: Desktop Controls & Mobile Hamburger Trigger */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
           {isAuthenticated && (
             <div className="desktop-only">
@@ -149,7 +147,6 @@ export default function Navbar() {
           )}
           <ThemeToggle />
 
-          {/* Desktop User / Auth Links */}
           <div className="desktop-only">
             {isAuthenticated ? (
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -238,7 +235,6 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile Hamburger Button */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
@@ -260,7 +256,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Navigation Drawer */}
       {mobileOpen && (
         <div
           style={{
@@ -348,7 +343,6 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* Responsive Breakpoints CSS */}
       <style>{`
         @media (min-width: 769px) {
           .mobile-only { display: none !important; }

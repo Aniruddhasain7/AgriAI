@@ -19,25 +19,25 @@ const HIGHLIGHTS = [
   {
     title: "AI Foliage Disease Scanner",
     icon: Scan,
-    badge: "MobileNetV2 Vision",
+    badge: "Computer Vision Model",
     desc: "Computer vision diagnosis of plant leaf infections with actionable organic and chemical treatment advice.",
   },
   {
     title: "Crop Harvest Yield Estimation",
     icon: TrendingUp,
-    badge: "FAO ML Regressor",
+    badge: "Harvest Yield Predictor",
     desc: "Predict harvest yields per hectare based on historical rainfall, climate, and pesticide inputs.",
   },
   {
     title: "Live Weather Advisory",
     icon: CloudSun,
-    badge: "Open-Meteo Radar",
+    badge: "Real-Time Meteo Radar",
     desc: "Real-time field weather observations and 3-day customized recommendations to optimize spraying & irrigation.",
   },
   {
     title: "Multilingual Farmer AI",
     icon: Bot,
-    badge: "AgriAI LLM",
+    badge: "Multilingual AI Advisor",
     desc: "Instant agricultural consultation in English, Hindi, and Bengali for crop health and fertilizer questions.",
   },
 ];
@@ -52,7 +52,7 @@ const STEPS = [
   {
     step: "02",
     title: "AI Neural Network Evaluation",
-    desc: "Our MobileNetV2 computer vision and Random Forest ML models process your input in real time.",
+    desc: "Our computer vision and intelligent machine learning models process your input in real time.",
     icon: Cpu,
   },
   {
@@ -66,7 +66,6 @@ const STEPS = [
 export default function LandingPage() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "56px" }}>
-      {/* Hero Showcase Banner */}
       <section
         className="glass-card hero-card"
         style={{
@@ -95,7 +94,9 @@ export default function LandingPage() {
             }}
           >
             Smarter Farming with <br />
-            <span style={{ color: "var(--primary-500)" }}>Artificial Intelligence</span>
+            <span style={{ color: "var(--primary-500)" }}>
+              Artificial Intelligence
+            </span>
           </h1>
 
           <p
@@ -106,18 +107,29 @@ export default function LandingPage() {
               lineHeight: 1.65,
             }}
           >
-            AgriAI combines deep learning computer vision, random forest yield predictors, live meteorological forecasts, and interactive AI consultation to maximize crop yields.
+            AgriAI combines deep learning computer vision, random forest yield
+            predictors, live meteorological forecasts, and interactive AI
+            consultation to maximize crop yields.
           </p>
 
-          {/* Primary CTA Buttons */}
-          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center" }}>
-            <Link to="/signup" className="btn-primary" style={{ width: "auto", padding: "14px 36px", fontSize: "16px" }}>
+          <div
+            style={{
+              display: "flex",
+              gap: "16px",
+              flexWrap: "wrap",
+              alignItems: "center",
+            }}
+          >
+            <Link
+              to="/signup"
+              className="btn-primary"
+              style={{ width: "auto", padding: "14px 36px", fontSize: "16px" }}
+            >
               <span>Get Started Free</span>
               <ArrowRight size={18} />
             </Link>
           </div>
 
-          {/* Trust Metrics Bar */}
           <div
             style={{
               display: "flex",
@@ -128,23 +140,48 @@ export default function LandingPage() {
             }}
           >
             <div>
-              <p style={{ fontSize: "26px", fontWeight: 800, color: "var(--primary-500)" }}>99.5%</p>
-              <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>ML Accuracy</p>
+              <p
+                style={{
+                  fontSize: "26px",
+                  fontWeight: 800,
+                  color: "var(--primary-500)",
+                }}
+              >
+                99.5%
+              </p>
+              <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>
+                ML Accuracy
+              </p>
             </div>
-            <div style={{ width: "1px", background: "var(--border-color)" }} />
+            <div className="desktop-only" style={{ width: "1px", background: "var(--border-color)" }} />
             <div>
-              <p style={{ fontSize: "26px", fontWeight: 800, color: "var(--accent-lime)" }}>20k+</p>
-              <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>PlantVillage Dataset</p>
+              <p
+                style={{
+                  fontSize: "26px",
+                  fontWeight: 800,
+                  color: "var(--accent-lime)",
+                }}
+              >
+                20k+
+              </p>
+              <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>
+                PlantVillage Dataset
+              </p>
             </div>
-            <div style={{ width: "1px", background: "var(--border-color)" }} />
+            <div className="desktop-only" style={{ width: "1px", background: "var(--border-color)" }} />
             <div>
-              <p style={{ fontSize: "26px", fontWeight: 800, color: "#3b82f6" }}>3 Lang</p>
-              <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>Multilingual AI</p>
+              <p
+                style={{ fontSize: "26px", fontWeight: 800, color: "#3b82f6" }}
+              >
+                3 Lang
+              </p>
+              <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>
+                Multilingual AI
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Hero Image Showcase */}
         <div style={{ position: "relative" }}>
           <div
             style={{
@@ -170,11 +207,11 @@ export default function LandingPage() {
               style={{
                 position: "absolute",
                 inset: 0,
-                background: "linear-gradient(180deg, transparent 50%, rgba(6, 21, 16, 0.85) 100%)",
+                background:
+                  "linear-gradient(180deg, transparent 50%, rgba(6, 21, 16, 0.85) 100%)",
               }}
             />
 
-            {/* Badge overlay */}
             <div
               style={{
                 position: "absolute",
@@ -208,22 +245,34 @@ export default function LandingPage() {
                 <Sprout size={24} />
               </div>
               <div>
-                <p style={{ fontSize: "15px", fontWeight: 700, color: "#ffffff" }}>AgriAI Precision Platform</p>
-                <p style={{ fontSize: "12.5px", color: "var(--primary-400)" }}>Real-Time Field Intelligence & Advisory</p>
+                <p
+                  style={{
+                    fontSize: "15px",
+                    fontWeight: 700,
+                    color: "#ffffff",
+                  }}
+                >
+                  AgriAI Precision Platform
+                </p>
+                <p style={{ fontSize: "12.5px", color: "var(--primary-400)" }}>
+                  Real-Time Field Intelligence & Advisory
+                </p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Platform Capabilities Details */}
       <section>
         <div style={{ textAlign: "left", marginBottom: "28px" }}>
-          <h2 style={{ fontSize: "28px", fontWeight: 800, marginBottom: "8px" }}>
+          <h2
+            style={{ fontSize: "28px", fontWeight: 800, marginBottom: "8px" }}
+          >
             Platform Details & Core Intelligence
           </h2>
           <p style={{ color: "var(--text-muted)", fontSize: "16px" }}>
-            Explore how artificial intelligence optimizes every phase of agricultural decision making.
+            Explore how artificial intelligence optimizes every phase of
+            agricultural decision making.
           </p>
         </div>
 
@@ -287,10 +336,22 @@ export default function LandingPage() {
                     </span>
                   </div>
 
-                  <h3 style={{ fontSize: "19px", fontWeight: 700, marginBottom: "8px" }}>
+                  <h3
+                    style={{
+                      fontSize: "19px",
+                      fontWeight: 700,
+                      marginBottom: "8px",
+                    }}
+                  >
                     {h.title}
                   </h3>
-                  <p style={{ fontSize: "14px", color: "var(--text-muted)", lineHeight: 1.55 }}>
+                  <p
+                    style={{
+                      fontSize: "14px",
+                      color: "var(--text-muted)",
+                      lineHeight: 1.55,
+                    }}
+                  >
                     {h.desc}
                   </p>
                 </div>
@@ -300,18 +361,20 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* How It Works Section */}
       <section style={{ textAlign: "center" }}>
         <div style={{ maxWidth: "600px", margin: "0 auto 36px" }}>
           <div className="page-badge" style={{ margin: "0 auto 12px" }}>
             <ShieldCheck size={14} />
             <span>Simple 3-Step Process</span>
           </div>
-          <h2 style={{ fontSize: "32px", fontWeight: 800, marginBottom: "8px" }}>
+          <h2
+            style={{ fontSize: "32px", fontWeight: 800, marginBottom: "8px" }}
+          >
             How AgriAI Works
           </h2>
           <p style={{ color: "var(--text-muted)", fontSize: "16px" }}>
-            From diagnosis to harvest predictions, get actionable agricultural guidance in seconds.
+            From diagnosis to harvest predictions, get actionable agricultural
+            guidance in seconds.
           </p>
         </div>
 
@@ -371,10 +434,22 @@ export default function LandingPage() {
                     </span>
                   </div>
 
-                  <h3 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "8px" }}>
+                  <h3
+                    style={{
+                      fontSize: "20px",
+                      fontWeight: 700,
+                      marginBottom: "8px",
+                    }}
+                  >
                     {s.title}
                   </h3>
-                  <p style={{ fontSize: "14px", color: "var(--text-muted)", lineHeight: 1.6 }}>
+                  <p
+                    style={{
+                      fontSize: "14px",
+                      color: "var(--text-muted)",
+                      lineHeight: 1.6,
+                    }}
+                  >
                     {s.desc}
                   </p>
                 </div>
@@ -384,7 +459,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Call To Action Footer Banner */}
       <section
         className="glass-card hero-card"
         style={{
@@ -394,18 +468,35 @@ export default function LandingPage() {
         }}
       >
         <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-          <Award size={36} style={{ color: "var(--primary-500)", marginBottom: "16px" }} />
-          <h2 style={{ fontSize: "32px", fontWeight: 800, marginBottom: "12px" }}>
+          <Award
+            size={36}
+            style={{ color: "var(--primary-500)", marginBottom: "16px" }}
+          />
+          <h2
+            style={{ fontSize: "32px", fontWeight: 800, marginBottom: "12px" }}
+          >
             Ready to Transform Your Harvest Yields?
           </h2>
-          <p style={{ fontSize: "16px", color: "var(--text-muted)", marginBottom: "28px" }}>
-            Join thousands of farmers using artificial intelligence to optimize field health and decision making.
+          <p
+            style={{
+              fontSize: "16px",
+              color: "var(--text-muted)",
+              marginBottom: "28px",
+            }}
+          >
+            Join thousands of farmers using artificial intelligence to optimize
+            field health and decision making.
           </p>
 
           <Link
             to="/signup"
             className="btn-primary"
-            style={{ width: "auto", padding: "14px 36px", fontSize: "16px", margin: "0 auto" }}
+            style={{
+              width: "auto",
+              padding: "14px 36px",
+              fontSize: "16px",
+              margin: "0 auto",
+            }}
           >
             <span>Get Started Free Now</span>
             <ArrowRight size={18} />

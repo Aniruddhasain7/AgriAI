@@ -1,98 +1,72 @@
 # 🌾 AgriAI — AI-Powered Smart Agriculture Platform
 
-**AgriAI** is an advanced, full-stack smart farming Web Application designed to empower farmers and agricultural experts with real-time machine learning predictions, computer vision disease diagnosis, meteorological advisories, and multilingual AI consultation.
+**AgriAI** is an advanced, full-stack smart farming web application designed to empower farmers and agricultural experts with real-time machine learning predictions, computer vision disease diagnosis, meteorological advisories, and multilingual AI consultation.
+
+---
+
+<p align="center">
+  <img src="./frontend/src/assets/ss1.png" alt="AgriAI" width="100%" style="border-radius: 12px;" />
+</p>
 
 ---
 
 ## 🌟 Key Features
 
-| Icon | Feature | Description | Engine / Model |
-| :---: | :--- | :--- | :--- |
-| 🍃 | **AI Leaf Disease Detection** | Upload or scan crop leaf photos using the **Live WebCam Camera Scanner** to detect plant diseases instantly with actionable treatment plans. | PyTorch MobileNetV2 Deep CNN |
-| 🌾 | **Crop Yield Prediction** | Predict harvest output in tonnes per hectare ($t/ha$) based on harvest area, rainfall, temperature, and crop type. | Scikit-Learn Random Forest Regressor (FAO Dataset) |
-| 🧪 | **Soil Nutrient Balancer** | Calculate optimal N-P-K & pH fertilizer ratios ($Urea$, $DAP$, $MOP$) and soil acidity amendments for selected crops. | Rule-based Soil Chemistry Balancer |
-| ☀️ | **Real-Time Weather Advisory** | Live meteorological forecasts with 3-day customized farming recommendations tailored to your location. | Live Weather API Integration |
-| 📈 | **Mandi Market Prices** | Track real-time crop commodity price trends across various Indian states and markets. | Real-Time Mandi Market Tracker |
-| 💬 | **Multilingual AI Assistant** | Instant 24/7 agricultural consultation in **English**, **Hindi (हिंदी)**, and **Bengali (বাংলা)**. | Multilingual LLM Advisory Engine |
-| 🌗 | **Adaptive Theme System** | Glassmorphic UI with automatic Light & Dark mode support and responsive mobile drawer navigation. | Vanilla CSS3 Variables & Glassmorphism |
+| Icon | Feature                        | Description                                                                                                                                  | Engine / Model                                     |
+| :--: | :----------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------- |
+|  🍃  | **AI Leaf Disease Detection**  | Upload or scan crop leaf photos using the **Live WebCam Camera Scanner** to detect plant diseases instantly with actionable treatment plans. | ONNX Runtime MobileNetV2 Deep CNN                  |
+|  🌾  | **Crop Yield Prediction**      | Predict harvest output in tonnes per hectare based on harvest area, rainfall, temperature, and crop type.                                    | Scikit-Learn Random Forest Regressor (FAO Dataset) |
+|  🧪  | **Soil Nutrient Balancer**     | Calculate optimal N-P-K & pH fertilizer ratios and soil acidity amendments for selected crops.                                               | Rule-based Soil Chemistry Balancer                 |
+|  ☀️  | **Real-Time Weather Advisory** | Live meteorological forecasts with 3-day customized farming recommendations tailored to your location.                                       | Live Weather API Integration                       |
+|  📈  | **Mandi Market Prices**        | Track real-time crop commodity price trends across various Indian states and markets.                                                        | Real-Time Mandi Market Tracker                     |
+|  💬  | **Multilingual AI Assistant**  | Instant 24/7 agricultural consultation in **English**, **Hindi (हिंदी)**, and **Bengali (বাংলা)**.                                           | Google Gemini Multilingual LLM                     |
+|  🌗  | **Adaptive Theme System**      | Glassmorphic UI with automatic Light & Dark mode support and responsive mobile drawer navigation.                                            | Vanilla CSS3 Variables & Glassmorphism             |
 
 ---
 
 ## 🛠️ Technology Stack
 
-| Domain | Technology / Library | Version | Purpose & Usage |
-| :--- | :--- | :--- | :--- |
-| **Frontend Core** | React 18 | `v18.3.1` | Declarative component UI library |
-| **Build System** | Vite | `v8.2.1` | Ultra-fast frontend development server & bundler |
-| **Icons & UI** | Lucide React | `v0.453.0` | Modern, lightweight UI icon library |
-| **Internationalization** | i18next / react-i18next | `v23.16.2` | Multilingual support for English, Hindi, and Bengali |
-| **Routing** | React Router DOM | `v6.27.0` | Client-side Single Page Application (SPA) routing |
-| **Backend Core** | Flask | `v3.0.3` | Python micro-framework for modular RESTful API routes |
-| **Deep Learning** | PyTorch | `v2.4.0` | MobileNetV2 computer vision CNN model inference |
-| **Machine Learning** | Scikit-Learn | `v1.5.1` | Random Forest Crop Yield Regressor |
-| **Data Processing** | NumPy & Pandas | `v1.26.4 / v2.2.2` | Dataset transformations and array matrix calculations |
-| **Database ORM** | Flask-SQLAlchemy | `v3.1.1` | Object-Relational Mapper (SQLite locally, PostgreSQL in cloud) |
-| **Cloud Driver** | psycopg2-binary | `v2.9.9` | Production PostgreSQL Python database connector |
-| **Production Server** | Gunicorn | `v22.0.0` | High-performance Python WSGI HTTP server |
-| **Deployment (Backend)** | Railway | — | Flask API & PostgreSQL cloud hosting |
-| **Deployment (Frontend)** | Vercel | — | Static React SPA hosting with SPA fallback rewrites |
+| Domain                      | Technology              | Version            | Purpose                                                                                        |
+| :-------------------------- | :---------------------- | :----------------- | :--------------------------------------------------------------------------------------------- |
+| **Frontend Core**           | React 19                | `v19.2.8`          | Declarative component UI library                                                               |
+| **Build System**            | Vite                    | `v8.2.1`           | Ultra-fast development server & bundler                                                        |
+| **Icons & UI**              | Lucide React            | `v0.453.0`         | Modern, lightweight icon library                                                               |
+| **Internationalization**    | i18next / react-i18next | `v23.16.2`         | Multilingual support (EN, HI, BN)                                                              |
+| **Routing**                 | React Router DOM        | `v6.27.0`          | Client-side SPA routing                                                                        |
+| **Backend Core**            | Flask                   | `v3.0.3`           | Python micro-framework for RESTful API                                                         |
+| **ML Inference**            | ONNX Runtime            | `v1.19.2`          | Lightweight MobileNetV2 disease model inference (replaces PyTorch runtime — ~15 MB vs ~800 MB) |
+| **Model Training & Export** | PyTorch / torchvision   | `v2.4.0`           | MobileNetV2 CNN training with GPU CUDA acceleration & ONNX export                              |
+| **Machine Learning**        | Scikit-Learn            | `v1.5.1`           | Random Forest Crop Yield & Crop Recommender                                                    |
+| **Data Processing**         | NumPy & Pandas          | `v1.26.4 / v2.2.2` | Dataset transformations & array calculations                                                   |
+| **AI Assistant**            | Google Gemini API       | `>=2.17.0`         | Multilingual agricultural LLM chatbot                                                          |
+| **Database ORM**            | Flask-SQLAlchemy        | `v3.1.1`           | Unified PostgreSQL ORM (Supabase / Cloud / Docker)                                             |
+| **DB Driver**               | psycopg2-binary         | `v2.9.9`           | PostgreSQL Python connector                                                                    |
+| **Production Server**       | Gunicorn                | `v22.0.0`          | Python WSGI HTTP server                                                                        |
+| **Containerization**        | Docker                  | —                  | Python 3.11.9 locked runtime for Render                                                        |
+| **Deployment (Backend)**    | Render                  | —                  | Free Docker web service (Flask API)                                                            |
+| **Deployment (Database)**   | Supabase                | —                  | Free managed PostgreSQL (500 MB)                                                               |
+| **Deployment (Frontend)**   | Vercel                  | —                  | Free static React SPA hosting                                                                  |
 
 ---
 
-## 🔄 System Architecture & Workflow
-
-### 1. High-Level System Architecture
+## 🔄 System Architecture
 
 ```mermaid
 graph TD
-    A[Client UI / React 18 + Vite] -->|HTTPS Requests| B[Flask API Gateway / Gunicorn]
-    A -->|Live WebCam Scan / Photo Upload| C[MobileNetV2 PyTorch Disease Engine]
-    
-    B --> D[Authentication & Session Handler / PBKDF2]
+    A[Client UI — React 19 + Vite on Vercel] -->|HTTPS Requests| B[Flask API — Gunicorn on Render]
+    A -->|Live WebCam / Photo Upload| C[ONNX Runtime MobileNetV2 Disease Engine]
+
+    B --> D[Authentication Handler — PBKDF2]
     B --> C
     B --> E[Random Forest FAO Yield Predictor]
     B --> F[Soil N-P-K & pH Balancer Engine]
     B --> G[Live Weather API & Advisory Generator]
     B --> H[Mandi Market Prices Tracker]
-    B --> I[Multilingual LLM Assistant Engine]
+    B --> I[Google Gemini Multilingual Assistant]
 
-    D --> J[(PostgreSQL / SQLite Database)]
+    D --> J[(PostgreSQL Database)]
     C --> J
     E --> J
-```
-
-### 2. User Dataflow & Decision Journey
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Farmer as Farmer / User
-    participant Frontend as React 18 Frontend
-    participant Backend as Flask Backend API
-    participant ML as PyTorch / Scikit-Learn Models
-    participant DB as Cloud Database (PostgreSQL/SQLite)
-
-    Farmer->>Frontend: 1. Sign up / Log in
-    Frontend->>Backend: POST /api/auth/register or /login
-    Backend->>DB: Hash password & store/validate user
-    Backend-->>Frontend: Return session user token
-
-    Farmer->>Frontend: 2. Capture leaf scan via Live Camera
-    Frontend->>Backend: POST /api/disease/detect (Multipart Image)
-    Backend->>ML: Pass image tensor through MobileNetV2
-    ML-->>Backend: Return disease class & confidence score
-    Backend->>DB: Save diagnosis record in history table
-    Backend-->>Frontend: Return disease diagnosis & treatment plan
-
-    Farmer->>Frontend: 3. Input Crop, Area, Rain & Temp
-    Frontend->>Backend: POST /api/yield/predict (Form JSON)
-    Backend->>ML: Run Random Forest Regressor
-    ML-->>Backend: Return yield estimation (t/ha)
-    Backend-->>Frontend: Display estimated harvest output
-
-    Farmer->>Frontend: 4. Ask farming query in Hindi/Bengali/English
-    Frontend->>Backend: POST /api/chatbot/chat (Message JSON)
-    Backend-->>Frontend: Stream intelligent agricultural advice
 ```
 
 ---
@@ -102,22 +76,30 @@ sequenceDiagram
 ```text
 Agri-ai/
 ├── backend/
+│   ├── Dockerfile            # Docker image — locks Python 3.11.9 for Render deployment
 │   ├── app.py                # Flask Application Factory & Route Registration
 │   ├── models_db.py          # SQLAlchemy Models (User, DiseaseHistory, PredictionHistory)
-│   ├── requirements.txt      # Python Dependencies (PyTorch, Flask, Gunicorn, psycopg2)
-│   ├── Procfile              # Railway Production Deployment Configuration
-│   ├── routes/               # Modular API Route Handlers
+│   ├── requirements.txt      # Python Dependencies (ONNX Runtime, Flask, Gunicorn, psycopg2)
+│   ├── models/
+│   │   ├── disease_model.onnx    # MobileNetV2 disease model (ONNX format, 9.1 MB)
+│   │   ├── crop_model.joblib     # Random Forest crop recommender
+│   │   ├── yield_model.joblib    # Random Forest yield predictor
+│   │   └── class_indices.json   # Disease class label mapping
+│   ├── routes/
 │   │   ├── auth.py           # User Authentication Routes
-│   │   ├── disease.py        # PyTorch Image Scanner API
+│   │   ├── disease.py        # ONNX Image Scanner API
 │   │   ├── yield_predict.py  # FAO Yield Predictor API
 │   │   ├── soil.py           # Soil N-P-K Nutrient Balancer
 │   │   ├── weather.py        # Live Meteorology API
 │   │   ├── market.py         # Mandi Commodity Prices API
 │   │   └── chatbot.py        # Multilingual Farmer Assistant API
 │   └── ml_training/          # ML Model Training Scripts & Datasets
+│       ├── train_disease_model.py  # PyTorch MobileNetV2 CNN training script (CUDA)
+│       ├── train_crop_model.py     # Scikit-Learn Crop Recommender trainer
+│       └── train_yield_model.py    # Scikit-Learn FAO Yield Predictor trainer
 ├── frontend/
 │   ├── src/
-│   │   ├── api/client.js     # API Axios/Fetch Integration with Authorization Headers
+│   │   ├── api/client.js     # Fetch-based API client with Authorization headers
 │   │   ├── components/       # Reusable UI Components (Navbar, ThemeToggle, LanguageSwitcher)
 │   │   ├── pages/            # Page Views (Landing, Dashboard, Tools, Login, Signup)
 │   │   ├── i18n/             # Locale Translations (en, hi, bn)
@@ -130,58 +112,107 @@ Agri-ai/
 
 ---
 
-## 🚀 Quick Local Setup
+## 🚀 Local Development Setup
 
-### 1. **Backend Setup**
+### 1. Backend Setup
 
 ```bash
-# Navigate to backend directory
 cd backend
 
 # Install Python dependencies
 pip install -r requirements.txt
 
-# Run the Flask backend server
+# Create a .env file with your keys
+echo "GEMINI_API_KEY=your_gemini_api_key" > .env
+echo "DATABASE_URL=postgresql://user:password@host:5432/dbname" >> .env
+
+# Run the Flask development server
 python app.py
 ```
-*Backend will start on `http://localhost:5000`*
 
-### 2. **Frontend Setup**
+Backend starts at `http://localhost:5000`
+
+### 2. Frontend Setup
 
 ```bash
-# Navigate to frontend directory
 cd frontend
 
 # Install Node dependencies
 npm install
 
+# Create .env.local with backend URL
+echo "VITE_API_URL=http://localhost:5000/api" > .env.local
+
 # Start the Vite development server
 npm run dev
 ```
-*Frontend will start on `http://localhost:5173`*
+
+Frontend starts at `http://localhost:5173`
+
+### Demo Account
+
+| Email             | Password   |
+| ----------------- | ---------- |
+| `demo@agriai.org` | `demo1234` |
 
 ---
 
-## 🌐 Deployment Instructions
+## 🌐 Production Deployment
 
-### **Backend Deployment (Railway.app)**
-1. Connect your GitHub repository to **[Railway.app](https://railway.app)**.
-2. Add a **PostgreSQL** database service in Railway.
-3. Configure Backend Settings:
-   - **Root Directory**: `backend`
-   - **Start Command**: `gunicorn "app:create_app()"`
-   - **Variables**: `GEMINI_API_KEY`, `DATABASE_URL` (linked to Railway Postgres)
+The app is deployed on a **free-forever stack**:
 
-### **Frontend Deployment (Vercel.com)**
-1. Import your GitHub repository to **[Vercel.com](https://vercel.com)**.
-2. Configure Project Settings:
-   - **Root Directory**: `frontend`
-   - **Build Command**: `npm run build`
-   - **Output Directory**: `dist`
-   - **Environment Variable**: `VITE_API_URL` = `https://your-railway-backend-url.up.railway.app/api`
+| Service      | Platform                         | Notes                                                          |
+| ------------ | -------------------------------- | -------------------------------------------------------------- |
+| **Frontend** | [Vercel](https://vercel.com)     | Auto-deploys from `main` branch                                |
+| **Backend**  | [Render](https://render.com)     | Docker service, free tier (spins down after 15 min inactivity) |
+| **Database** | [Supabase](https://supabase.com) | Free PostgreSQL, 500 MB                                        |
+
+### Backend — Render (Docker)
+
+1. Create a **Web Service** on Render
+2. Connect your GitHub repo → set **Root Directory**: `backend`, **Runtime**: `Docker`
+3. Add environment variables:
+   - `DATABASE_URL` → Supabase connection pooler URI (Session mode, port 6543)
+   - `GEMINI_API_KEY` → Your Google Gemini API key
+
+### Database — Supabase
+
+1. Create a free project at [supabase.com](https://supabase.com)
+2. Go to **Settings → Database → Connection pooling → Session mode**
+3. Copy the URI and set it as `DATABASE_URL` in Render
+
+### Frontend — Vercel
+
+1. Import your GitHub repo to [vercel.com](https://vercel.com)
+2. Set **Root Directory**: `frontend`, **Framework**: `Vite`
+3. Add environment variable:
+   - `VITE_API_URL` → Your Render backend URL (e.g. `https://agriai-backend-xxxx.onrender.com`)
 
 ---
 
-## 📜 License
+## 🔑 Environment Variables
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+| Variable         | Where                    | Description                                         |
+| ---------------- | ------------------------ | --------------------------------------------------- |
+| `GEMINI_API_KEY` | `backend/.env` + Render  | Google Gemini API key for AI chatbot                |
+| `DATABASE_URL`   | `backend/.env` + Render  | Supabase PostgreSQL connection pooler URI           |
+| `VITE_API_URL`   | `frontend/.env.local` + Vercel | Full URL of the Render backend (no trailing `/api`) |
+
+---
+
+## 📡 API Endpoints
+
+| Method | Endpoint               | Description                              |
+| ------ | ---------------------- | ---------------------------------------- |
+| `GET`  | `/api/health`          | Health check                             |
+| `POST` | `/api/auth/register`   | User registration                        |
+| `POST` | `/api/auth/login`      | User login                               |
+| `GET`  | `/api/auth/me`         | Get current user                         |
+| `POST` | `/api/disease/predict` | Leaf disease detection (multipart image) |
+| `GET`  | `/api/disease/history` | Disease scan history                     |
+| `POST` | `/api/yield/predict`   | Crop yield prediction                    |
+| `POST` | `/api/crop/recommend`  | Crop recommendation                      |
+| `POST` | `/api/soil/recommend`  | Soil nutrient recommendation             |
+| `GET`  | `/api/weather/advice`  | Weather-based farming advisory           |
+| `GET`  | `/api/market/trend`    | Market price trends                      |
+| `POST` | `/api/chatbot/message` | AI farming assistant                     |
