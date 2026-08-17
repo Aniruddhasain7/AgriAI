@@ -50,57 +50,65 @@
 
 ## 🔄 System Architecture
 
+AgriAI is built following an enterprise-grade **3-Tier Architecture**, establishing clear separation between user presentation, business logic & AI inference, and database persistence.
+
 ```mermaid
 graph TB
-    subgraph Frontend["Frontend Presentation Layer (Vercel)"]
-        UI["React 19 SPA + Vite"]
-        Cam["WebCam & Photo Scanner"]
+    subgraph Tier1["Tier 1: Presentation Tier (Client Layer - Vercel)"]
+        direction TB
+        UI["React 19 SPA (Vite Engine)"]
+        Cam["WebCam Scanner & Image Capture"]
         I18N["i18next Engine (EN / HI / BN)"]
+        APIClient["REST API Client (client.js)"]
+
         UI --- Cam
         UI --- I18N
+        UI --> APIClient
     end
 
-    subgraph Gateway["API & Gateway Layer (Render Docker)"]
-        Flask["Flask REST API (Gunicorn WSGI)"]
+    subgraph Tier2["Tier 2: Application Tier (Business & AI Logic Layer - Render Docker)"]
+        direction TB
+        Flask["Flask REST API Gateway (Gunicorn WSGI)"]
         Auth["PBKDF2 Auth & Security Guard"]
+
+        subgraph ML_AI["AI / ML Inference & Analytical Engines"]
+            ONNX["ONNX Runtime Engine (MobileNetV2 CNN)"]
+            CropRF["Crop Recommender (Random Forest Classifier)"]
+            YieldRF["Yield Predictor (Random Forest Regressor)"]
+            SoilEng["Soil Chemistry N-P-K Balancer"]
+            LLM["Google Gemini Multilingual LLM Client"]
+        end
+
+        subgraph ExternalAPIs["External Data Integrations"]
+            Weather["Live Meteorology Weather API"]
+            Market["Mandi Commodity Price Tracker"]
+        end
+
         Flask --> Auth
+        Flask --> ML_AI
+        Flask --> ExternalAPIs
     end
 
-    subgraph Intelligence["AI, ML & Analytical Engines"]
-        ONNX["ONNX Runtime (MobileNetV2 CNN)"]
-        CropRF["Scikit-Learn Crop Recommender"]
-        YieldRF["Scikit-Learn FAO Yield Predictor"]
-        SoilEng["Soil Chemistry N-P-K Balancer"]
-        LLM["Google Gemini Multilingual LLM"]
+    subgraph Tier3["Tier 3: Data Tier (Persistence & Model Storage - Supabase)"]
+        direction TB
+        DB[("PostgreSQL Database (Supabase Cloud)")]
+        Models[("Serialized Model Artifacts (.onnx & .joblib)")]
     end
 
-    subgraph External["External Services & APIs"]
-        Weather["Live Meteorology Weather API"]
-        Market["Mandi Commodity Market Price Tracker"]
-    end
-
-    subgraph Persistence["Persistence Layer (Supabase)"]
-        DB[("PostgreSQL Database")]
-    end
-
-    %% Inter-layer Data Flow
-    UI -->|HTTPS REST Requests| Flask
-    Cam -->|Leaf Photo Payload| ONNX
-
-    Flask -->|Image Inference| ONNX
-    Flask -->|Soil & Climate Inputs| CropRF
-    Flask -->|Harvest & Area Parameters| YieldRF
-    Flask -->|Nutrient Ratios| SoilEng
-    Flask -->|Consultation Prompts| LLM
-
-    Flask -->|Fetch Forecasts| Weather
-    Flask -->|Fetch Price Trends| Market
-
-    Auth -->|User Profiles| DB
-    ONNX -->|Scan Logs| DB
-    CropRF -->|Prediction Logs| DB
-    YieldRF -->|Yield Logs| DB
+    %% Tier Data Flow
+    APIClient ==>|HTTPS / REST Requests| Flask
+    Auth -->|ORM User Operations| DB
+    ML_AI -->|Audit & Prediction Logs| DB
+    ML_AI -->|Load Weights & Class Labels| Models
 ```
+
+### 🏢 3-Tier Layer Breakdown
+
+| Tier | Layer | Deployment Environment | Key Technologies | Core Responsibilities |
+| :--: | :--- | :--- | :--- | :--- |
+| **Tier 1** | **Presentation Tier** *(Client Layer)* | Vercel Static Cloud | React 19, Vite, Vanilla CSS3 Glassmorphism, i18next | • Renders responsive single-page user interfaces.<br>• Handles live camera access and crop leaf image pre-processing.<br>• Manages client-side routing, state, and multi-language switching (EN/HI/BN).<br>• Formats and dispatches HTTPS REST requests to backend API. |
+| **Tier 2** | **Application Tier** *(Business & AI Logic Layer)* | Render Web Service (Docker Container) | Flask 3, Gunicorn, ONNX Runtime, Scikit-Learn, Google GenAI | • Hosts REST API endpoints, routing, CORS, and request verification.<br>• Manages PBKDF2 password hashing and secure token sessions.<br>• Executes fast, local ML model inference (ONNX CNN leaf scanning, Random Forest crop/yield ML).<br>• Connects to Gemini LLM for AI consultation and fetches live weather & market APIs. |
+| **Tier 3** | **Data Tier** *(Persistence & Model Storage Layer)* | Supabase Managed PostgreSQL Cloud | PostgreSQL RDBMS, Flask-SQLAlchemy ORM, Local Disk Storage | • Stores relational database tables (`users`, `disease_history`, `prediction_history`).<br>• Maintains database connection pooling (Session mode) for reliable transactions.<br>• Stores version-locked pre-trained ML weights (`.onnx`, `.joblib`) and label mappings. |
 
 ---
 
