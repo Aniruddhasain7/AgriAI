@@ -57,7 +57,7 @@
     "chatbot": {
       "badge": "AI Agronomist",
       "desc": "Interactive agricultural AI assistant for pest management, irrigation schedules, and plant health.",
-      "tags": ["Multi-Language", "Voice-Ready", "24/7 Consultation"]
+      "tags": ["Multi-Language", "AI Advisory", "24/7 Consultation"]
     },
     "soil": {
       "badge": "Nutrient Rules",
@@ -117,7 +117,7 @@
     "badge": "Real-Time Meteo Telemetry",
     "title": "Live Weather Advisory",
     "subtitle": "Micro-climate field radar with 3-day agronomic spraying and irrigation forecasts.",
-    "search_placeholder": "Search city or farm location...",
+    "search_placeholder": "Search city, district, or farm location...",
     "use_gps": "Use Live GPS Location",
     "current_weather": "Current Field Conditions",
     "temperature": "Temperature",
@@ -128,7 +128,11 @@
     "irrigation_advice": "Irrigation Guidance",
     "forecast_3day": "3-Day Farm Forecast",
     "safe_spray": "Favorable Spraying Conditions",
-    "unsafe_spray": "High Wind / Rain Risk — Delay Spraying"
+    "unsafe_spray": "High Wind / Rain Risk — Delay Spraying",
+    "quick_presets": "Popular Agricultural Belts:",
+    "field_advice": "Agronomic Field Recommendations",
+    "direct_feed_badge": "Direct Live Feed",
+    "cached_feed_badge": "Live Telemetry"
   },
   "soil": {
     "badge": "Soil Chemistry Engine",

@@ -57,7 +57,7 @@ const TOOLS_CONFIG = [
     category: "diagnostics",
     icon: Bot,
     defaultBadge: "AI Agronomist",
-    defaultTags: ["Multi-Language", "Voice-Ready", "24/7 Consultation"],
+    defaultTags: ["Multi-Language", "AI Advisory", "24/7 Consultation"],
     defaultDesc:
       "Interactive agricultural AI assistant for pest management, irrigation schedules, and plant health.",
   },

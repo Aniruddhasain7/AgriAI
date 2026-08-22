@@ -11,7 +11,6 @@ import Chatbot from "./pages/Chatbot";
 import SoilAnalysis from "./pages/SoilAnalysis";
 import MarketPrices from "./pages/MarketPrices";
 import CropRecommendation from "./pages/CropRecommendation";
-
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem("agriai_token");
   const user = localStorage.getItem("agriai_user");
@@ -20,7 +19,6 @@ function ProtectedRoute({ children }) {
   }
   return children;
 }
-
 export default function App() {
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -30,7 +28,6 @@ export default function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-
           <Route
             path="/dashboard"
             element={
@@ -95,7 +92,6 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
