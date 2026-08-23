@@ -1585,13 +1585,13 @@ h6 {
   }
 
   .footer-main-grid {
-    grid-template-columns: 1fr;
-    gap: 22px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px 14px;
     padding: 24px 18px 20px;
   }
 
   .footer-brand-col {
-    grid-column: auto;
+    grid-column: 1 / -1;
     padding-bottom: 4px;
   }
 
@@ -1629,30 +1629,46 @@ h6 {
     height: 32px;
   }
 
+  .footer-nav-col,
+  .footer-about-col,
+  .footer-contact-col {
+    grid-column: span 1;
+    min-width: 0;
+  }
+
   .footer-col-title {
-    font-size: 13.5px;
+    font-size: 13px;
     margin-bottom: 10px;
     gap: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .footer-links-list {
-    gap: 14px;
+    gap: 12px;
   }
 
   .footer-link-item a,
   .footer-link-item button {
-    font-size: 13px;
-    gap: 8px;
-    padding: 4px 0;
+    font-size: 12px;
+    gap: 6px;
+    padding: 3px 0;
+    align-items: flex-start;
+    line-height: 1.35;
+    word-break: break-word;
+    text-align: left;
   }
 
   .footer-link-item svg {
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+    margin-top: 2px;
   }
 
   .footer-contact-col {
-    grid-column: auto;
+    grid-column: span 1;
     padding-top: 0;
     border-top: none;
   }
@@ -1660,7 +1676,7 @@ h6 {
   .footer-contact-col .footer-links-list {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
   }
 
   .footer-trust-strip {
@@ -1816,16 +1832,87 @@ h6 {
   }
 
   .dashboard-kpi-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .kpi-card {
+    padding: 12px 10px;
+    gap: 10px;
+  }
+
+  .kpi-icon-wrap {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+  }
+
+  .kpi-icon-wrap svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .kpi-value {
+    font-size: 16px;
+  }
+
+  .kpi-label {
+    font-size: 11px;
+    line-height: 1.25;
   }
 
   .quick-actions-btns {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .quick-btn {
+    padding: 9px 6px;
+    font-size: 12px;
+    gap: 6px;
+    justify-content: center;
+    text-align: center;
   }
 
   .footer-main-grid {
-    padding: 20px 14px 16px;
-    gap: 18px 12px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding: 20px 10px 16px;
+    gap: 18px 8px;
+  }
+
+  .footer-col-title {
+    font-size: 12px;
+    margin-bottom: 8px;
+    gap: 4px;
+    letter-spacing: -0.2px;
+  }
+
+  .footer-col-title svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .footer-links-list {
+    gap: 10px;
+  }
+
+  .footer-link-item a,
+  .footer-link-item button {
+    font-size: 11px;
+    gap: 4px;
+    padding: 2px 0;
+    line-height: 1.25;
+    word-break: break-word;
+  }
+
+  .footer-link-item svg {
+    width: 12px;
+    height: 12px;
+    margin-top: 2px;
+  }
+
+  .footer-contact-col .footer-links-list {
+    gap: 10px;
   }
 
   .footer-trust-strip {
