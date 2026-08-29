@@ -24,7 +24,7 @@ async function request(path, options = {}) {
     return res.json();
   } catch (err) {
     if (err.name === "TypeError" && err.message.includes("fetch")) {
-      throw new Error("Unable to connect to AgriAI server. Please check server status and network.");
+      throw new Error("Unable to connect to AgriAI server. If hosted on Render, the backend may take 30-45 seconds to spin up on cold start. Please try again in a few seconds.");
     }
     throw err;
   }
@@ -90,6 +90,14 @@ function calculateClientFarmingAdvice(tempC, precipMm, windKph, humidity) {
   return advice;
 }
 export const api = {
+  ping: async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/health`, { method: "GET" });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  },
   register: (payload) =>
     request("/auth/register", {
       method: "POST",
@@ -170,7 +178,7 @@ export const api = {
         farming_advice: calculateClientFarmingAdvice(tempC, precipMm, windKph, humidity),
         is_direct_feed: true,
       };
-    } catch (directErr) {
+    } catch {
       const isTropical = Math.abs(lat) < 25.0;
       const temp = isTropical ? 28.0 : 22.0;
       const humidity = isTropical ? 68.0 : 55.0;
@@ -217,6 +225,47 @@ export const api = {
       console.warn("Geocoding lookup error:", err);
       return [];
     }
+  },
+  reverseGeocode: async (lat, lon) => {
+    try {
+      const res = await fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const city = data.city || data.locality || data.principalSubdivision || "";
+        const state = data.principalSubdivision && data.principalSubdivision !== city ? data.principalSubdivision : "";
+        const country = data.countryName || "";
+        const parts = [city, state, country].filter(Boolean);
+        if (parts.length > 0) {
+          return parts.join(", ");
+        }
+      }
+    } catch (err) {
+      console.warn("Primary reverse geocode failed:", err);
+    }
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=12`
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const addr = data.address || {};
+        const place = addr.city || addr.town || addr.village || addr.suburb || addr.county || addr.state_district || "";
+        const state = addr.state || "";
+        const country = addr.country || "";
+        const parts = [place, state, country].filter(Boolean);
+        if (parts.length > 0) {
+          return parts.join(", ");
+        }
+        if (data.display_name) {
+          return data.display_name.split(",").slice(0, 3).join(", ").trim();
+        }
+      }
+    } catch (err2) {
+      console.warn("Secondary reverse geocode failed:", err2);
+    }
+    return `${Number(lat).toFixed(2)}°, ${Number(lon).toFixed(2)}°`;
   },
   sendChatMessage: (message, sessionId, lang) =>
     request("/chatbot/message", {

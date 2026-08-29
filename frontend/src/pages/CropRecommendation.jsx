@@ -12,6 +12,8 @@ import {
   RefreshCw,
   AlertTriangle,
   Award,
+  Sparkles,
+  BarChart3,
 } from "lucide-react";
 
 export default function CropRecommendation() {
@@ -59,7 +61,7 @@ export default function CropRecommendation() {
   };
 
   return (
-    <div style={{ maxWidth: "820px", margin: "0 auto" }}>
+    <div style={{ maxWidth: "860px", margin: "0 auto" }}>
       <div className="page-header">
         <div className="page-badge">
           <Sprout size={14} />
@@ -229,7 +231,7 @@ export default function CropRecommendation() {
         </form>
 
         {error && (
-          <div className="alert-box alert-error">
+          <div className="alert-box alert-error" style={{ marginTop: "24px" }}>
             <AlertTriangle size={20} />
             <div>
               <strong>Evaluation Error</strong>
@@ -239,42 +241,243 @@ export default function CropRecommendation() {
         )}
 
         {result && result.recommended_crop && (
-          <div
-            className="glass-card hero-card"
-            style={{
-              marginTop: "32px",
-              padding: "32px 28px",
-              borderRadius: "var(--radius-md)",
-              border: "1px solid var(--primary-500)",
-              textAlign: "center",
-            }}
-          >
+          <div style={{ marginTop: "36px", display: "flex", flexDirection: "column", gap: "24px" }}>
             <div
+              className="glass-card hero-card"
               style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "8px",
-                color: "var(--primary-500)",
-                fontWeight: 700,
-                fontSize: "15px",
-                marginBottom: "8px",
+                padding: "32px 28px",
+                borderRadius: "var(--radius-md)",
+                border: "1px solid var(--primary-500)",
+                position: "relative",
+                overflow: "hidden",
+                textAlign: "left",
               }}
             >
-              <Award size={22} />
-              <span>Optimal Match Recommended</span>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  flexWrap: "wrap",
+                  gap: "12px",
+                  marginBottom: "16px",
+                }}
+              >
+                <div
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    color: "var(--primary-500)",
+                    fontWeight: 700,
+                    fontSize: "14.5px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.5px",
+                  }}
+                >
+                  <Award size={20} />
+                  <span>#1 Optimal Match Recommended</span>
+                </div>
+
+                {result.confidence != null && (
+                  <div
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      background: "rgba(16, 185, 129, 0.15)",
+                      color: "var(--primary-500)",
+                      padding: "6px 14px",
+                      borderRadius: "var(--radius-full)",
+                      fontWeight: 700,
+                      fontSize: "14px",
+                      border: "1px solid rgba(16, 185, 129, 0.3)",
+                    }}
+                  >
+                    <Sparkles size={16} />
+                    <span>{result.confidence}% Match Confidence</span>
+                  </div>
+                )}
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "16px",
+                  margin: "8px 0 12px 0",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "36px",
+                    background: "rgba(16, 185, 129, 0.1)",
+                    width: "68px",
+                    height: "68px",
+                    borderRadius: "var(--radius-md)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: "1px solid rgba(16, 185, 129, 0.2)",
+                    color: "var(--primary-500)",
+                  }}
+                >
+                  <Sprout size={36} />
+                </div>
+                <div>
+                  <h2
+                    style={{
+                      fontSize: "38px",
+                      fontWeight: 800,
+                      textTransform: "capitalize",
+                      color: "var(--text-main)",
+                      margin: 0,
+                      lineHeight: 1.1,
+                    }}
+                  >
+                    {result.recommended_crop}
+                  </h2>
+                  <span
+                    style={{
+                      fontSize: "14px",
+                      color: "var(--text-muted)",
+                      fontWeight: 500,
+                    }}
+                  >
+                    Highest predicted suitability for your soil and weather profile
+                  </span>
+                </div>
+              </div>
             </div>
 
-            <h2
-              style={{
-                fontSize: "44px",
-                fontWeight: 800,
-                textTransform: "capitalize",
-                color: "var(--text-main)",
-                margin: "8px 0",
-              }}
-            >
-              {result.recommended_crop}
-            </h2>
+            {result.top_recommendations && result.top_recommendations.length > 0 && (
+              <div
+                className="glass-card"
+                style={{
+                  padding: "24px 28px",
+                  borderRadius: "var(--radius-md)",
+                  border: "1px solid var(--border-color)",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
+                  <BarChart3 size={20} style={{ color: "var(--primary-500)" }} />
+                  <h3 style={{ fontSize: "18px", fontWeight: 700, margin: 0, color: "var(--text-main)" }}>
+                    Top 3 Crop Suitability Ranking
+                  </h3>
+                </div>
+                <p style={{ fontSize: "13.5px", color: "var(--text-muted)", marginBottom: "20px" }}>
+                  AI machine learning model probability distribution for your soil nutrient (N-P-K) and climatic conditions:
+                </p>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                  {result.top_recommendations.map((item, idx) => {
+                    const rankThemes = [
+                      { badge: "var(--primary-500)", bg: "rgba(16, 185, 129, 0.12)", border: "rgba(16, 185, 129, 0.35)", bar: "var(--primary-500)" },
+                      { badge: "#3b82f6", bg: "rgba(59, 130, 246, 0.1)", border: "rgba(59, 130, 246, 0.25)", bar: "#3b82f6" },
+                      { badge: "#f59e0b", bg: "rgba(245, 158, 11, 0.1)", border: "rgba(245, 158, 11, 0.25)", bar: "#f59e0b" },
+                    ];
+                    const currentTheme = rankThemes[idx] || rankThemes[2];
+                    const rankLabel = idx === 0 ? "Best Match" : idx === 1 ? "Strong Alternative" : "Viable Alternative";
+
+                    return (
+                      <div
+                        key={idx}
+                        style={{
+                          padding: "16px 20px",
+                          borderRadius: "var(--radius-sm)",
+                          background: currentTheme.bg,
+                          border: `1px solid ${currentTheme.border}`,
+                          transition: "all 0.2s ease",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            flexWrap: "wrap",
+                            gap: "8px",
+                            marginBottom: "8px",
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                            <span
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "26px",
+                                height: "26px",
+                                borderRadius: "50%",
+                                background: currentTheme.badge,
+                                color: "#ffffff",
+                                fontSize: "13px",
+                                fontWeight: 800,
+                              }}
+                            >
+                              {idx + 1}
+                            </span>
+                            <div>
+                              <span
+                                style={{
+                                  fontSize: "16px",
+                                  fontWeight: 700,
+                                  textTransform: "capitalize",
+                                  color: "var(--text-main)",
+                                }}
+                              >
+                                {item.crop}
+                              </span>
+                              <span
+                                style={{
+                                  marginLeft: "8px",
+                                  fontSize: "12px",
+                                  color: "var(--text-muted)",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                ({rankLabel})
+                              </span>
+                            </div>
+                          </div>
+
+                          <div
+                            style={{
+                              fontSize: "15px",
+                              fontWeight: 800,
+                              color: currentTheme.badge,
+                            }}
+                          >
+                            {item.probability}%
+                          </div>
+                        </div>
+
+                        <div
+                          style={{
+                            height: "8px",
+                            width: "100%",
+                            borderRadius: "var(--radius-full)",
+                            background: "rgba(0, 0, 0, 0.08)",
+                            overflow: "hidden",
+                            marginTop: "6px",
+                          }}
+                        >
+                          <div
+                            style={{
+                              height: "100%",
+                              width: `${Math.max(item.probability, 1.5)}%`,
+                              background: currentTheme.bar,
+                              borderRadius: "var(--radius-full)",
+                              transition: "width 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
+                            }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

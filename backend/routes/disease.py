@@ -6,22 +6,19 @@ import numpy as np
 from PIL import Image
 from flask import Blueprint, request, jsonify
 from werkzeug.utils import secure_filename
-import onnxruntime as ort
-
 from models_db import db, DiseaseHistory
 
 disease_bp = Blueprint("disease", __name__)
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
 MODEL_DIR = os.path.join(os.path.dirname(__file__), "..", "models")
-ONNX_MODEL_PATH = os.path.join(MODEL_DIR, "disease_model.onnx")
+TFLITE_MODEL_PATH = os.path.join(MODEL_DIR, "disease_model.tflite")
 CLASS_INDEX_PATH = os.path.join(MODEL_DIR, "class_indices.json")
 
-_session = None
-_idx_to_label = None
-
-_MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)
-_STD  = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+_tflite_interpreter = None
+_tflite_input_details = None
+_tflite_output_details = None
+_idx_to_label = {}
 
 DISEASE_ADVICE_MAP = {
     "Apple___Apple_scab": "Apply sulfur, captan, or myclobutanil fungicide early in spring; rake and destroy fallen leaves to prevent fungal spore overwintering.",
@@ -128,24 +125,42 @@ def get_user_id_from_header():
     return None
 
 
-if os.path.exists(ONNX_MODEL_PATH) and os.path.exists(CLASS_INDEX_PATH):
+def load_tflite_interpreter(model_path: str):
+    if not os.path.exists(model_path):
+        return None, None, None
+
+    for mod_name, attr_name in [
+        ("ai_edge_litert.interpreter", "Interpreter"),
+        ("tflite_runtime.interpreter", "Interpreter"),
+        ("tensorflow.lite", "Interpreter"),
+    ]:
+        try:
+            import importlib
+            mod = importlib.import_module(mod_name)
+            Interpreter = getattr(mod, attr_name, None)
+            if Interpreter is not None:
+                interp = Interpreter(model_path=model_path)
+                interp.allocate_tensors()
+                in_details = interp.get_input_details()
+                out_details = interp.get_output_details()
+                print(f"Disease Detection: Successfully loaded TFLite model from {model_path} via {mod_name}")
+                return interp, in_details, out_details
+        except Exception:
+            continue
+
+    print(f"Warning: Could not initialize TFLite interpreter for {model_path}")
+    return None, None, None
+
+
+if os.path.exists(CLASS_INDEX_PATH):
     try:
         with open(CLASS_INDEX_PATH, "r") as f:
             class_indices = json.load(f)
-
         _idx_to_label = {int(v): k for k, v in class_indices.items()}
+    except Exception as e:
+        print("Warning: Could not parse class_indices.json:", e)
 
-        sess_options = ort.SessionOptions()
-        sess_options.intra_op_num_threads = 1
-        _session = ort.InferenceSession(
-            ONNX_MODEL_PATH,
-            sess_options=sess_options,
-            providers=["CPUExecutionProvider"],
-        )
-        print("Disease Detection: Successfully loaded ONNX model from", ONNX_MODEL_PATH)
-    except Exception as err:
-        print("Warning: Could not load disease_model.onnx, falling back to mock classifier:", err)
-        _session = None
+_tflite_interpreter, _tflite_input_details, _tflite_output_details = load_tflite_interpreter(TFLITE_MODEL_PATH)
 
 MOCK_CLASSES = [
     {"label": "Apple Scab", "advice": "Apply sulfur or myclobutanil fungicide; rake and dispose of fallen leaves."},
@@ -175,34 +190,27 @@ def mock_predict(image_bytes: bytes):
     return {"label": result["label"], "confidence": float(confidence), "advice": result["advice"]}
 
 
-def preprocess_image(image_bytes: bytes) -> np.ndarray:
+def predict_tflite(image_bytes: bytes):
     img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
     img = img.resize((224, 224), Image.BILINEAR)
-    arr = np.array(img, dtype=np.float32) / 255.0
-    arr = (arr - _MEAN) / _STD
-    arr = arr.transpose(2, 0, 1)
-    return arr[np.newaxis, ...]
+    arr = np.array(img, dtype=np.float32)
+    input_tensor = arr[np.newaxis, ...]
 
+    _tflite_interpreter.set_tensor(_tflite_input_details[0]["index"], input_tensor)
+    _tflite_interpreter.invoke()
+    probabilities = _tflite_interpreter.get_tensor(_tflite_output_details[0]["index"])[0]
 
-def real_predict(image_bytes: bytes):
-    input_tensor = preprocess_image(image_bytes)
-    input_name = _session.get_inputs()[0].name
-    outputs = _session.run(None, {input_name: input_tensor})
-    logits = outputs[0][0]
-    exp_logits = np.exp(logits - np.max(logits))
-    probabilities = exp_logits / exp_logits.sum()
     top_indices = np.argsort(probabilities)[::-1][:3]
     top_idx = int(top_indices[0])
     confidence = float(probabilities[top_idx]) * 100.0
-    label = _idx_to_label.get(top_idx, "Unknown")
+    label = _idx_to_label.get(top_idx, f"Class_{top_idx}")
     advice = get_advice_for_label(label)
 
     top_3 = []
     for idx in top_indices:
         i = int(idx)
-        lbl = _idx_to_label.get(i, "Unknown")
         top_3.append({
-            "label": lbl,
+            "label": _idx_to_label.get(i, f"Class_{i}"),
             "confidence_percent": round(float(probabilities[i]) * 100.0, 2)
         })
 
@@ -228,12 +236,12 @@ def predict_disease():
     filename = secure_filename(file.filename)
     image_bytes = file.read()
 
-    if _session is not None:
+    if _tflite_interpreter is not None:
         try:
-            prediction = real_predict(image_bytes)
-            source = "ml_model"
+            prediction = predict_tflite(image_bytes)
+            source = "tflite_model"
         except Exception as err:
-            print("Error during ONNX inference, falling back to mock predict:", err)
+            print("Error during TFLite inference, falling back:", err)
             prediction = mock_predict(image_bytes)
             source = "mock_fallback"
     else:
@@ -260,6 +268,7 @@ def predict_disease():
     return jsonify({
         "filename": filename,
         "prediction": prediction["label"],
+        "class_name": prediction["label"],
         "confidence_percent": prediction["confidence"],
         "recommended_action": rec_action,
         "top_3": prediction.get("top_3", []),

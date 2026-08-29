@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   Scan,
@@ -79,6 +79,7 @@ const STEPS = [
 
 export default function LandingPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [activeModal, setActiveModal] = useState(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
@@ -103,6 +104,24 @@ export default function LandingPage() {
       behavior: "smooth",
     });
   };
+
+  const handleGetStarted = (e) => {
+    e?.preventDefault();
+    const token = localStorage.getItem("agriai_token");
+    const user = localStorage.getItem("agriai_user");
+    if (token && user) {
+      navigate("/loading", {
+        state: {
+          redirectTo: "/dashboard",
+          message: "Loading your farm dashboard...",
+          duration: 400,
+        },
+      });
+    } else {
+      navigate("/signup");
+    }
+  };
+
 
   return (
     <>
@@ -161,14 +180,14 @@ export default function LandingPage() {
                 alignItems: "center",
               }}
             >
-              <Link
-                to="/signup"
+              <button
+                onClick={handleGetStarted}
                 className="btn-primary"
-                style={{ width: "auto", padding: "14px 36px", fontSize: "16px" }}
+                style={{ width: "auto", padding: "14px 36px", fontSize: "16px", cursor: "pointer", border: "none" }}
               >
                 <span>Get Started Free</span>
                 <ArrowRight size={18} />
-              </Link>
+              </button>
             </div>
 
             <div
@@ -529,19 +548,21 @@ export default function LandingPage() {
               field health and decision making.
             </p>
 
-            <Link
-              to="/signup"
+            <button
+              onClick={handleGetStarted}
               className="btn-primary"
               style={{
                 width: "auto",
                 padding: "14px 36px",
                 fontSize: "16px",
                 margin: "0 auto",
+                cursor: "pointer",
+                border: "none",
               }}
             >
               <span>Get Started Free Now</span>
               <ArrowRight size={18} />
-            </Link>
+            </button>
           </div>
         </section>
 

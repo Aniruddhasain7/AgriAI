@@ -17,17 +17,7 @@ import {
   AlertCircle,
   Sparkles,
   X,
-  Compass,
 } from "lucide-react";
-
-const AGRICULTURAL_PRESETS = [
-  { name: "Punjab (Ludhiana)", icon: "🌾", lat: 30.90, lon: 75.85, tag: "Wheat & Rice Belt" },
-  { name: "West Bengal (Bardhaman)", icon: "🌾", lat: 23.23, lon: 87.86, tag: "Rice Bowl" },
-  { name: "Maharashtra (Nashik)", icon: "🍇", lat: 19.99, lon: 73.78, tag: "Grape & Onion Hub" },
-  { name: "Andhra (Guntur)", icon: "🌶️", lat: 16.30, lon: 80.43, tag: "Chilli & Cotton" },
-  { name: "California (Fresno)", icon: "🌽", lat: 36.74, lon: -119.78, tag: "Central Valley" },
-  { name: "Kenya (Nairobi)", icon: "☕", lat: -1.29, lon: 36.82, tag: "East Africa Agri" },
-];
 
 export default function WeatherAdvice() {
   const { t } = useTranslation();
@@ -38,7 +28,6 @@ export default function WeatherAdvice() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const searchContainerRef = useRef(null);
 
@@ -60,11 +49,9 @@ export default function WeatherAdvice() {
     }
 
     const timer = setTimeout(async () => {
-      setIsSearching(true);
       const results = await api.searchLocation(searchQuery);
       setSearchResults(results);
       setShowDropdown(results.length > 0);
-      setIsSearching(false);
     }, 350);
 
     return () => clearTimeout(timer);
@@ -93,7 +80,7 @@ export default function WeatherAdvice() {
     setResult(null);
 
     if (!navigator.geolocation) {
-      setError("Geolocation is not supported by your browser. Please search for your city above.");
+      setError("Geolocation is not supported by your browser. Please search for your city or district above.");
       setLoading(false);
       return;
     }
@@ -102,13 +89,20 @@ export default function WeatherAdvice() {
       async (pos) => {
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
-        await loadWeatherForCoords(lat, lon, "Your Current GPS Location");
+        try {
+          const resolvedName = await api.reverseGeocode(lat, lon);
+          await loadWeatherForCoords(lat, lon, resolvedName);
+        } catch (err) {
+          console.warn("Reverse geocoding failed:", err);
+          await loadWeatherForCoords(lat, lon, `GPS: ${lat.toFixed(2)}°, ${lon.toFixed(2)}°`);
+        }
       },
-      () => {
-        setError("GPS permission denied or unavailable. You can search your town or select a preset region below.");
+      (geoErr) => {
+        console.warn("GPS permission error:", geoErr);
+        setError("GPS permission denied or location unavailable. Please search for your city or district in the search box above.");
         setLoading(false);
       },
-      { timeout: 10000 }
+      { timeout: 10000, enableHighAccuracy: true }
     );
   };
 
@@ -286,9 +280,17 @@ export default function WeatherAdvice() {
                   placeholder={t("weather.search_placeholder", "Search city, district, or farm location...")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && searchResults.length > 0) {
-                      handleSelectSearchResult(searchResults[0]);
+                  onKeyDown={async (e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      if (searchResults.length > 0) {
+                        handleSelectSearchResult(searchResults[0]);
+                      } else if (searchQuery.trim().length >= 2) {
+                        const results = await api.searchLocation(searchQuery);
+                        if (results && results.length > 0) {
+                          handleSelectSearchResult(results[0]);
+                        }
+                      }
                     }
                   }}
                   onFocus={() => searchResults.length > 0 && setShowDropdown(true)}
@@ -390,7 +392,7 @@ export default function WeatherAdvice() {
               {loading ? (
                 <>
                   <RefreshCw size={18} className="spinner" />
-                  <span>{t("weather.fetching", "Fetching...")}</span>
+                  <span>{t("weather.fetching", "Locating & Fetching...")}</span>
                 </>
               ) : (
                 <>
@@ -399,50 +401,6 @@ export default function WeatherAdvice() {
                 </>
               )}
             </button>
-          </div>
-
-          <div>
-            <div style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-muted)", marginBottom: "8px", display: "flex", alignItems: "center", gap: "6px" }}>
-              <Compass size={14} style={{ color: "var(--primary-500)" }} />
-              <span>{t("weather.quick_presets", "Popular Agricultural Belts:")}</span>
-            </div>
-            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-              {AGRICULTURAL_PRESETS.map((preset, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => loadWeatherForCoords(preset.lat, preset.lon, preset.name)}
-                  disabled={loading}
-                  style={{
-                    fontSize: "12.5px",
-                    fontWeight: 600,
-                    padding: "7px 14px",
-                    borderRadius: "var(--radius-full)",
-                    background: "var(--bg-input)",
-                    border: "1px solid var(--border-color)",
-                    color: "var(--text-main)",
-                    cursor: "pointer",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    transition: "all 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = "var(--primary-500)";
-                    e.currentTarget.style.color = "var(--primary-500)";
-                    e.currentTarget.style.transform = "translateY(-1px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = "var(--border-color)";
-                    e.currentTarget.style.color = "var(--text-main)";
-                    e.currentTarget.style.transform = "none";
-                  }}
-                >
-                  <span>{preset.icon}</span>
-                  <span>{preset.name}</span>
-                </button>
-              ))}
-            </div>
           </div>
         </div>
 
@@ -453,21 +411,6 @@ export default function WeatherAdvice() {
               <strong>Weather Notice</strong>
               <p style={{ fontSize: "13px", marginTop: "4px" }}>{error}</p>
             </div>
-            <button
-              onClick={() => loadWeatherForCoords(23.51, 87.35, "Standard Regional Station")}
-              style={{
-                fontSize: "12px",
-                fontWeight: 600,
-                padding: "6px 12px",
-                background: "var(--primary-500)",
-                color: "#fff",
-                border: "none",
-                borderRadius: "var(--radius-sm)",
-                cursor: "pointer",
-              }}
-            >
-              Load Default Station
-            </button>
           </div>
         )}
 

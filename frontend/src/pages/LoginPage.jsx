@@ -3,19 +3,22 @@ import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, LogIn, ArrowRight, ShieldCheck, AlertTriangle } from "lucide-react";
 import { api } from "../api/client";
 import heroImg from "../assets/hero.jpg";
+import LoadingPage from "./LoadingPage";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isAlreadyAuth, setIsAlreadyAuth] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("agriai_token");
-    if (token) {
-      navigate("/dashboard", { replace: true });
+    const user = localStorage.getItem("agriai_user");
+    if (token && user) {
+      setIsAlreadyAuth(true);
     }
-  }, [navigate]);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,13 +36,35 @@ export default function LoginPage() {
       localStorage.setItem("agriai_token", data.token);
       localStorage.setItem("agriai_user", JSON.stringify(data.user));
 
-      navigate("/dashboard");
+      setTimeout(() => {
+        navigate("/dashboard", { replace: true });
+      }, 300);
     } catch (err) {
-      setError(err.message || "Failed to log in. Please check your credentials.");
-    } finally {
       setLoading(false);
+      setError(err.message || "Failed to log in. Please check your credentials.");
     }
   };
+
+  if (isAlreadyAuth) {
+    return (
+      <LoadingPage
+        title="AgriAI"
+        message="You are already logged in. Loading your dashboard..."
+        redirectTo="/dashboard"
+        duration={500}
+      />
+    );
+  }
+
+  if (loading) {
+    return (
+      <LoadingPage
+        title="AgriAI"
+        message="Authenticating your account... Please wait"
+      />
+    );
+  }
+
 
   return (
     <div
@@ -152,7 +177,7 @@ export default function LoginPage() {
           </div>
 
           <button type="submit" className="btn-primary" disabled={loading} style={{ marginTop: "12px" }}>
-            <span>{loading ? "Authenticating..." : "Log In to Portal"}</span>
+            <span>Log In to Portal</span>
             <LogIn size={18} />
           </button>
         </form>

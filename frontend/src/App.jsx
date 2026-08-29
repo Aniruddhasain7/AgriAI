@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
@@ -11,6 +12,9 @@ import Chatbot from "./pages/Chatbot";
 import SoilAnalysis from "./pages/SoilAnalysis";
 import MarketPrices from "./pages/MarketPrices";
 import CropRecommendation from "./pages/CropRecommendation";
+import LoadingPage from "./pages/LoadingPage";
+import { api } from "./api/client";
+
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem("agriai_token");
   const user = localStorage.getItem("agriai_user");
@@ -19,11 +23,20 @@ function ProtectedRoute({ children }) {
   }
   return children;
 }
-export default function App() {
+
+function AppContent() {
+  const location = useLocation();
+  const hideNavbar = location.pathname === "/loading";
+
+  useEffect(() => {
+    // Warm up the backend cloud instance (e.g. Render spin-up) immediately on initial frontend load
+    api.ping();
+  }, []);
+
   return (
-    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <Navbar />
-      <main className="main-content">
+    <>
+      {!hideNavbar && <Navbar />}
+      <main className={hideNavbar ? "" : "main-content"}>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -92,9 +105,18 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/loading" element={<LoadingPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <AppContent />
     </BrowserRouter>
   );
 }

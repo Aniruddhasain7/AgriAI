@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { api } from "../api/client";
 import heroImg from "../assets/hero.jpg";
+import LoadingPage from "./LoadingPage";
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -21,13 +22,15 @@ export default function SignupPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isAlreadyAuth, setIsAlreadyAuth] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("agriai_token");
-    if (token) {
-      navigate("/dashboard", { replace: true });
+    const user = localStorage.getItem("agriai_user");
+    if (token && user) {
+      setIsAlreadyAuth(true);
     }
-  }, [navigate]);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,13 +49,35 @@ export default function SignupPage() {
       localStorage.setItem("agriai_token", data.token);
       localStorage.setItem("agriai_user", JSON.stringify(data.user));
 
-      navigate("/dashboard");
+      setTimeout(() => {
+        navigate("/dashboard", { replace: true });
+      }, 300);
     } catch (err) {
-      setError(err.message || "Failed to create account. Please try again.");
-    } finally {
       setLoading(false);
+      setError(err.message || "Failed to create account. Please try again.");
     }
   };
+
+  if (isAlreadyAuth) {
+    return (
+      <LoadingPage
+        title="AgriAI"
+        message="You are already logged in. Loading your dashboard..."
+        redirectTo="/dashboard"
+        duration={500}
+      />
+    );
+  }
+
+  if (loading) {
+    return (
+      <LoadingPage
+        title="AgriAI"
+        message="Creating your account & preparing dashboard... Please wait"
+      />
+    );
+  }
+
 
   return (
     <div
@@ -219,11 +244,7 @@ export default function SignupPage() {
             disabled={loading}
             style={{ marginTop: "12px" }}
           >
-            <span>
-              {loading
-                ? "Registering Account..."
-                : "Create Account & Get Started"}
-            </span>
+            <span>Create Account & Get Started</span>
             <ArrowRight size={18} />
           </button>
         </form>

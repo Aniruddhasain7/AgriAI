@@ -184,16 +184,21 @@
   },
   "chatbot": {
     "badge": "24/7 Smart Agronomist",
-    "title": "Multilingual AI Chatbot",
-    "subtitle": "Ask any questions regarding crop diseases, fertilizers, seasonal planning, or market decisions in your language.",
-    "placeholder": "Ask AgriAI about crop health, fertilizers, weather protection...",
+    "title": "Farmer Assistant",
+    "subtitle": "Ask any question regarding crop diseases, fertilizers, weather protection, or market decisions in your language.",
+    "welcome_title": "Welcome to AgriAI Assistant",
+    "welcome_subtitle": "Select a suggested topic below or type your question in the box to get started.",
+    "placeholder": "Ask anything about farming, crops, fertilizer, pest control...",
     "send": "Send",
     "clear": "Clear Chat",
+    "thinking": "AgriAI is thinking...",
+    "error": "Sorry, I ran into an issue processing your request. Please try again.",
+    "quick_prompts": "Suggested Topics",
     "chips": {
-      "disease": "How to treat yellow rust in wheat?",
-      "fertilizer": "What is the best NPK ratio for tomato?",
-      "weather": "When is the best time to irrigate paddy?",
-      "pest": "Organic ways to control aphids and bollworms"
+      "fertilizer": "What fertilizer is best for wheat in acidic soil?",
+      "disease": "How can I prevent early blight in potatoes?",
+      "temperature": "What is the ideal sowing temperature for maize?",
+      "pest": "How to manage whitefly infestation on tomato crops?"
     },
     "welcome_msg": "Hello! I am your AI Agronomist assistant. How can I help with your crops or farm today?"
   },

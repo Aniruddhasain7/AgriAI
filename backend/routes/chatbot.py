@@ -1,6 +1,5 @@
 import os
-from google import genai  # type: ignore[import-untyped]
-from google.genai import types  # type: ignore[import-untyped]
+from groq import Groq
 from flask import Blueprint, request, jsonify
 
 chatbot_bp = Blueprint("chatbot", __name__)
@@ -9,19 +8,29 @@ _client = None
 
 def _get_client():
     global _client
-    if _client is None:
-        _client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+    api_key = os.environ.get("GROQ_API_KEY")
+    if _client is None and api_key:
+        _client = Groq(api_key=api_key)
     return _client
 
 SYSTEM_INSTRUCTION = (
-    "You are an agricultural assistant helping farmers with practical advice on crops, "
-    "pests, irrigation, fertilizer, weather, and market decisions. Keep answers concise, "
-    "practical, and easy to understand for a non-technical farmer. If the question is "
-    "unrelated to agriculture, politely redirect to farming topics."
+    "You are AgriAI, an expert agricultural assistant helping farmers with practical advice on crops, "
+    "plant diseases, fertilizers, soil management, irrigation, pest control, weather protection, and market decisions.\n\n"
+    "Formatting Guidelines:\n"
+    "1. Structure your answers cleanly using Markdown headings (###), bullet points, and bold text for keywords.\n"
+    "2. Prefer clean bullet points and step-by-step lists over complex wide ASCII tables so the response is easy to read on mobile and desktop.\n"
+    "3. Never output raw HTML tags (do not use <br>, <table>, etc.). Use pure Markdown.\n"
+    "4. Keep explanations practical, farmer-friendly, and actionable in the field.\n"
+    "5. If a question is unrelated to agriculture, politely redirect to farming topics."
 )
 
 sessions: dict[str, list] = {}
 
+
+MODELS = [
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
+]
 
 @chatbot_bp.route("/message", methods=["POST"])
 def chat():
@@ -32,31 +41,47 @@ def chat():
 
     if not message:
         return jsonify({"error": "Field 'message' is required."}), 400
-    if not os.environ.get("GEMINI_API_KEY"):
-        return jsonify({"error": "GEMINI_API_KEY not configured on the server."}), 500
+
+    api_key = os.environ.get("GROQ_API_KEY")
+    if not api_key:
+        return jsonify({"error": "GROQ_API_KEY not configured on the server."}), 500
 
     client = _get_client()
+    if not client:
+        return jsonify({"error": "Failed to initialize Groq client. Please check GROQ_API_KEY."}), 500
 
     if session_id not in sessions:
         sessions[session_id] = [
-            types.Content(role="user",  parts=[types.Part(text=SYSTEM_INSTRUCTION)]),
-            types.Content(role="model", parts=[types.Part(text="Understood. I'll help with practical farming advice.")]),
+            {"role": "system", "content": SYSTEM_INSTRUCTION}
         ]
 
     history = sessions[session_id]
     prompt = f"Respond in {lang}. Farmer's question: {message}"
+    messages_payload = history + [{"role": "user", "content": prompt}]
 
-    try:
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=history + [types.Content(role="user", parts=[types.Part(text=prompt)])],
-            config=types.GenerateContentConfig(system_instruction=None),
-        )
-        reply = response.text
+    reply = None
+    last_error = None
 
-        history.append(types.Content(role="user",  parts=[types.Part(text=prompt)]))
-        history.append(types.Content(role="model", parts=[types.Part(text=reply)]))
-    except Exception as e:
-        return jsonify({"error": f"Gemini API error: {str(e)}"}), 502
+    for model in MODELS:
+        try:
+            chat_completion = client.chat.completions.create(
+                model=model,
+                messages=messages_payload,
+                temperature=0.6,
+            )
+            reply = chat_completion.choices[0].message.content or ""
+            break
+        except Exception as e:
+            last_error = str(e)
+            continue
+
+    if reply is None:
+        return jsonify({"error": f"Groq API error: {last_error}"}), 502
+
+    history.append({"role": "user", "content": prompt})
+    history.append({"role": "assistant", "content": reply})
+
+    if len(history) > 21:
+        sessions[session_id] = [history[0]] + history[-20:]
 
     return jsonify({"reply": reply, "session_id": session_id})

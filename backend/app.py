@@ -97,6 +97,15 @@ def create_app():
             return jsonify({"error": err.description}), err.code
         return jsonify({"error": f"Server error: {str(err)}"}), 500
 
+    @app.route("/", methods=["GET"])
+    def root():
+        return jsonify({
+            "status": "online",
+            "message": "Server is live",
+            "service": "AgriAI Backend API",
+            "health_check": "/api/health"
+        }), 200
+
     @app.route("/api/health")
     def health():
         return {"status": "ok", "service": "AgriAI API"}
