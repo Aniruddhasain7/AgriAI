@@ -156,7 +156,11 @@ if os.path.exists(CLASS_INDEX_PATH):
     try:
         with open(CLASS_INDEX_PATH, "r") as f:
             class_indices = json.load(f)
-        _idx_to_label = {int(v): k for k, v in class_indices.items()}
+        for k, v in class_indices.items():
+            if isinstance(v, int) or (isinstance(v, str) and v.isdigit()):
+                _idx_to_label[int(v)] = str(k)
+            elif isinstance(k, int) or (isinstance(k, str) and k.isdigit()):
+                _idx_to_label[int(k)] = str(v)
     except Exception as e:
         print("Warning: Could not parse class_indices.json:", e)
 
@@ -194,6 +198,8 @@ def predict_tflite(image_bytes: bytes):
     img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
     img = img.resize((224, 224), Image.BILINEAR)
     arr = np.array(img, dtype=np.float32)
+    if arr.max() > 1.0:
+        arr = arr / 255.0
     input_tensor = arr[np.newaxis, ...]
 
     _tflite_interpreter.set_tensor(_tflite_input_details[0]["index"], input_tensor)

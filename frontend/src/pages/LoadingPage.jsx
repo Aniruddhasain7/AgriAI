@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Sprout } from "lucide-react";
 
@@ -37,11 +37,10 @@ export default function LoadingPage({
 
   let dynamicMessage = initialMessage;
   if (showServerWakeupNotes && !targetRedirect) {
-    if (elapsed >= 15) {
-      dynamicMessage =
-        "Almost ready! Finalizing server initialization & database handshake...";
+    if (elapsed >= 10) {
+      dynamicMessage = "Almost ready! Finalizing setup...";
     } else if (elapsed >= 3) {
-      dynamicMessage = "Connecting to AgriAI server...";
+      dynamicMessage = "Connecting to AgriAI...";
     }
   }
 

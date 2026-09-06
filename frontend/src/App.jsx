@@ -29,7 +29,7 @@ function AppContent() {
   const hideNavbar = location.pathname === "/loading";
 
   useEffect(() => {
-    // Warm up the backend cloud instance (e.g. Render spin-up) immediately on initial frontend load
+    // Warm up the backend API immediately on initial frontend load
     api.ping();
   }, []);
 

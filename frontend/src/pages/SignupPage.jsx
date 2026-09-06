@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   User,
@@ -8,6 +8,8 @@ import {
   ShieldCheck,
   CheckCircle2,
   AlertTriangle,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { api } from "../api/client";
 import heroImg from "../assets/hero.jpg";
@@ -20,17 +22,14 @@ export default function SignupPage() {
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [isAlreadyAuth, setIsAlreadyAuth] = useState(false);
-
-  useEffect(() => {
+  const [isAlreadyAuth] = useState(() => {
     const token = localStorage.getItem("agriai_token");
     const user = localStorage.getItem("agriai_user");
-    if (token && user) {
-      setIsAlreadyAuth(true);
-    }
-  }, []);
+    return Boolean(token && user);
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -228,13 +227,22 @@ export default function SignupPage() {
             <div className="input-wrapper">
               <Lock size={18} className="input-icon" />
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 required
-                className="form-input input-with-icon"
+                className="form-input input-with-icon input-with-action"
                 placeholder="Create strong password"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
               />
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={() => setShowPassword(!showPassword)}
+                title={showPassword ? "Hide password" : "Show password"}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
 

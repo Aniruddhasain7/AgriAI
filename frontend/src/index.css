@@ -235,6 +235,34 @@ h6 {
   padding-left: 44px;
 }
 
+.form-input.input-with-action {
+  padding-right: 44px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  transition: color 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
+}
+
+.password-toggle-btn:hover {
+  color: var(--primary-500);
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.password-toggle-btn:active {
+  transform: scale(0.92);
+}
+
 .form-input:focus,
 .form-select:focus,
 .form-textarea:focus {
