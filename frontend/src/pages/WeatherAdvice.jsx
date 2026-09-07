@@ -4,19 +4,19 @@ import { api } from "../api/client";
 import {
   CloudSun,
   MapPin,
-  Thermometer,
-  Droplets,
-  Wind,
   CloudRain,
-  CheckCircle,
   AlertTriangle,
   RefreshCw,
   Search,
   Calendar,
   ShieldCheck,
+  X,
   AlertCircle,
   Sparkles,
-  X,
+  Thermometer,
+  Droplets,
+  Wind,
+  CheckCircle,
 } from "lucide-react";
 
 export default function WeatherAdvice() {
@@ -43,8 +43,6 @@ export default function WeatherAdvice() {
 
   useEffect(() => {
     if (!searchQuery || searchQuery.trim().length < 2) {
-      setSearchResults([]);
-      setShowDropdown(false);
       return;
     }
 
@@ -279,7 +277,14 @@ export default function WeatherAdvice() {
                   className="form-input input-with-icon"
                   placeholder={t("weather.search_placeholder", "Search city, district, or farm location...")}
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setSearchQuery(val);
+                    if (!val || val.trim().length < 2) {
+                      setSearchResults([]);
+                      setShowDropdown(false);
+                    }
+                  }}
                   onKeyDown={async (e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();

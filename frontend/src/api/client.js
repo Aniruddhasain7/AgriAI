@@ -24,7 +24,7 @@ async function request(path, options = {}) {
     return res.json();
   } catch (err) {
     if (err.name === "TypeError" && err.message.includes("fetch")) {
-      throw new Error("Unable to connect to AgriAI server. If hosted on Render, the backend may take 30-45 seconds to spin up on cold start. Please try again in a few seconds.");
+      throw new Error("Unable to connect to AgriAI server. Please check your connection and try again in a few seconds.", { cause: err });
     }
     throw err;
   }
@@ -56,7 +56,6 @@ function calculateClientSprayingWindow(tempC, precipMm, windKph, humidity) {
 function calculateClientFarmingAdvice(tempC, precipMm, windKph, humidity) {
   const advice = [];
   if (precipMm > 5.0) {
-    advice.append?.("Heavy rain forecasted — immediately pause pesticide, herbicide, and top-dress fertilizer spraying.") ||
     advice.push("Heavy rain forecasted — immediately pause pesticide, herbicide, and top-dress fertilizer spraying to prevent nutrient runoff.");
   } else if (precipMm > 0.5) {
     advice.push("Light rain expected — delay chemical foliar applications until crop foliage is completely dry.");
@@ -129,7 +128,7 @@ export const api = {
       return res.json();
     } catch (err) {
       if (err.name === "TypeError" && err.message.includes("fetch")) {
-        throw new Error("Unable to connect to AgriAI server.");
+        throw new Error("Unable to connect to AgriAI server.", { cause: err });
       }
       throw err;
     }

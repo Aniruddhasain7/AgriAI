@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import {
@@ -9,13 +9,13 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Calendar,
+  Activity,
+  Compass,
   Sparkles,
-  Info,
   ShieldCheck,
   Building2,
-  Activity,
   Search,
-  Compass,
+  Info,
 } from "lucide-react";
 
 const CROPS = [
@@ -55,7 +55,7 @@ export default function MarketPrices() {
   const [mandiFilter, setMandiFilter] = useState("");
   const [activeTab, setActiveTab] = useState("chart");
 
-  const handleFetch = async (selectedCrop = crop) => {
+  const handleFetch = useCallback(async (selectedCrop = crop) => {
     setLoading(true);
     setError("");
     try {
@@ -70,10 +70,29 @@ export default function MarketPrices() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [crop]);
 
   useEffect(() => {
-    handleFetch(crop);
+    let ignore = false;
+    api.getMarketTrend(crop)
+      .then((data) => {
+        if (!ignore) {
+          if (data.error) throw new Error(data.error);
+          setResult(data);
+          setSelectedDayIdx(
+            data.last_7_day_trend ? data.last_7_day_trend.length - 1 : 6,
+          );
+        }
+      })
+      .catch((err) => {
+        if (!ignore) {
+          setError(err.message || "Failed to fetch market data");
+        }
+      });
+
+    return () => {
+      ignore = true;
+    };
   }, [crop]);
 
   const handleCropSelect = (cId) => {

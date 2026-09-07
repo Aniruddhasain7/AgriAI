@@ -12,7 +12,7 @@
 
 | Icon | Feature                        | Description                                                                                                                                        | Engine / Model                                           |
 | :--: | :----------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------- |
-|  🍃  | **AI Leaf Disease Detection**  | Upload or scan crop leaf photos using the **Live WebCam Camera Scanner** to detect plant diseases instantly with actionable treatment plans.       | TensorFlow Lite (LiteRT) MobileNetV2 Deep CNN            |
+|  🍃  | **AI Leaf Disease Detection**  | Upload or scan crop leaf photos using the **Live WebCam Camera Scanner** to detect plant diseases instantly with actionable treatment plans.       | TensorFlow Lite (LiteRT) Custom Deep CNN                 |
 |  🌾  | **Crop Yield Prediction**      | Predict harvest output in tonnes per hectare based on harvest area, rainfall, temperature, and crop type.                                          | Scikit-Learn Random Forest Regressor (FAO Dataset)       |
 |  🌱  | **AI Crop Recommendation**     | Recommend optimal crops based on soil N-P-K levels, pH, ambient temperature, humidity, and rainfall.                                               | Scikit-Learn Random Forest Classifier                    |
 |  🧪  | **Soil Nutrient Balancer**     | Calculate optimal N-P-K & pH fertilizer ratios and soil acidity amendments for selected crops.                                                     | Rule-based Soil Chemistry Balancer                       |
@@ -25,26 +25,26 @@
 
 ## 🛠️ Technology Stack
 
-| Domain                      | Technology              | Version              | Purpose                                                                                          |
-| :-------------------------- | :---------------------- | :------------------- | :----------------------------------------------------------------------------------------------- |
-| **Frontend Core**           | React 19                | `v19.2.8`            | Declarative component UI library                                                                 |
-| **Build System**            | Vite                    | `v8.2.0`             | Ultra-fast development server & bundler                                                          |
-| **Icons & UI**              | Lucide React            | `v1.31.0`            | Modern, lightweight icon library                                                                 |
-| **Internationalization**    | i18next / react-i18next | `v23.14.0 / v15.0.1` | Multilingual support (EN, HI, BN)                                                                |
-| **Routing**                 | React Router DOM        | `v6.26.0`            | Client-side SPA routing                                                                          |
-| **Backend Core**            | Flask                   | `v3.0.3`             | Python micro-framework for RESTful API                                                           |
-| **ML Inference**            | LiteRT (ai-edge-litert) | `>=2.0.0`            | Lightweight TensorFlow Lite inference engine for MobileNetV2 disease model (~17 MB runtime)      |
-| **Model Training & Export** | TensorFlow / Keras      | `v2.16+`             | MobileNetV2 CNN transfer learning on PlantVillage dataset & TFLite export                        |
-| **Machine Learning**        | Scikit-Learn            | `v1.6.1`             | Random Forest Crop Yield & Crop Recommender                                                      |
-| **Data Processing**         | NumPy & Pandas          | `v1.26.4 / v2.2.2`   | Dataset transformations & array calculations                                                     |
-| **AI Assistant**            | Groq AI API             | `>=0.18.0`           | Multilingual agricultural LLM chatbot (`openai/gpt-oss-120b` / `openai/gpt-oss-20b`)             |
-| **Database ORM**            | Flask-SQLAlchemy        | `v3.1.1`             | Unified PostgreSQL ORM (Supabase / Cloud / Docker)                                               |
-| **DB Driver**               | psycopg2-binary         | `v2.9.9`             | PostgreSQL Python connector                                                                      |
-| **Production Server**       | Gunicorn                | `v22.0.0`            | Python WSGI HTTP server                                                                          |
-| **Containerization**        | Docker                  | —                    | Python 3.11.9-slim locked runtime for cloud services                                             |
-| **Deployment (Backend)**    | Render                  | —                    | Free Docker web service (Flask API)                                                              |
-| **Deployment (Database)**   | Supabase                | —                    | Free managed PostgreSQL (500 MB)                                                                 |
-| **Deployment (Frontend)**   | Vercel                  | —                    | Free static React SPA hosting                                                                    |
+| Domain                      | Technology              | Version              | Purpose                                                                                     |
+| :-------------------------- | :---------------------- | :------------------- | :------------------------------------------------------------------------------------------ |
+| **Frontend Core**           | React 19                | `v19.2.8`            | Declarative component UI library                                                            |
+| **Build System**            | Vite                    | `v8.2.0`             | Ultra-fast development server & bundler                                                     |
+| **Icons & UI**              | Lucide React            | `v1.31.0`            | Modern, lightweight icon library                                                            |
+| **Internationalization**    | i18next / react-i18next | `v23.14.0 / v15.0.1` | Multilingual support (EN, HI, BN)                                                           |
+| **Routing**                 | React Router DOM        | `v6.26.0`            | Client-side SPA routing                                                                     |
+| **Backend Core**            | Flask                   | `v3.0.3`             | Python micro-framework for RESTful API                                                      |
+| **ML Inference**            | LiteRT (ai-edge-litert) | `>=2.0.0`            | Lightweight TensorFlow Lite inference engine for Custom Deep CNN disease model (~17 MB runtime) |
+| **Model Training & Export** | TensorFlow              | `v2.16+`             | Custom Deep CNN architecture on PlantVillage dataset & TFLite export                        |
+| **Machine Learning**        | Scikit-Learn            | `v1.6.1`             | Random Forest Crop Yield & Crop Recommender                                                 |
+| **Data Processing**         | NumPy & Pandas          | `v1.26.4 / v2.2.2`   | Dataset transformations & array calculations                                                |
+| **AI Assistant**            | Groq AI API             | `>=0.18.0`           | Multilingual agricultural LLM chatbot (`openai/gpt-oss-120b` / `openai/gpt-oss-20b`)        |
+| **Database ORM**            | Flask-SQLAlchemy        | `v3.1.1`             | Unified PostgreSQL ORM (Supabase / Cloud / Docker)                                          |
+| **DB Driver**               | psycopg2-binary         | `v2.9.9`             | PostgreSQL Python connector                                                                 |
+| **Production Server**       | Gunicorn                | `v22.0.0`            | Python WSGI HTTP server                                                                     |
+| **Containerization**        | Docker                  | —                    | Python 3.11.9-slim locked runtime for cloud services                                        |
+| **Deployment (Backend)**    | Render                  | —                    | Free Docker web service (Flask API)                                                         |
+| **Deployment (Database)**   | Supabase                | —                    | Free managed PostgreSQL (500 MB)                                                            |
+| **Deployment (Frontend)**   | Vercel                  | —                    | Free static React SPA hosting                                                               |
 
 ---
 
@@ -72,7 +72,7 @@ graph TB
         Auth["PBKDF2 Auth & Security Guard"]
 
         subgraph ML_AI["AI / ML Inference & Analytical Engines"]
-            LiteRT["LiteRT Inference Engine (MobileNetV2 CNN)"]
+            LiteRT["LiteRT Inference Engine (Custom Deep CNN)"]
             CropRF["Crop Recommender (Random Forest Classifier)"]
             YieldRF["Yield Predictor (Random Forest Regressor)"]
             SoilEng["Soil Chemistry N-P-K Balancer"]
@@ -104,9 +104,9 @@ graph TB
 
 ### 🏢 3-Tier Layer Breakdown
 
-|    Tier    | Layer                                               | Deployment Environment                | Key Technologies                                           | Core Responsibilities                                                                                                                                                                                                                                                                                                          |
-| :--------: | :-------------------------------------------------- | :------------------------------------ | :--------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Tier 1** | **Presentation Tier** _(Client Layer)_              | Vercel Static Cloud                   | React 19, Vite, Vanilla CSS3 Glassmorphism, i18next        | • Renders responsive single-page user interfaces.<br>• Handles live camera access and crop leaf image pre-processing.<br>• Manages client-side routing, state, and multi-language switching (EN/HI/BN).<br>• Formats and dispatches HTTPS REST requests to backend API.                                                        |
+|    Tier    | Layer                                               | Deployment Environment                | Key Technologies                                           | Core Responsibilities                                                                                                                                                                                                                                                                                                            |
+| :--------: | :-------------------------------------------------- | :------------------------------------ | :--------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tier 1** | **Presentation Tier** _(Client Layer)_              | Vercel Static Cloud                   | React 19, Vite, Vanilla CSS3 Glassmorphism, i18next        | • Renders responsive single-page user interfaces.<br>• Handles live camera access and crop leaf image pre-processing.<br>• Manages client-side routing, state, and multi-language switching (EN/HI/BN).<br>• Formats and dispatches HTTPS REST requests to backend API.                                                          |
 | **Tier 2** | **Application Tier** _(Business & AI Logic Layer)_  | Render Web Service (Docker Container) | Flask 3, Gunicorn, LiteRT, Scikit-Learn, Groq              | • Hosts REST API endpoints, routing, CORS, and request verification.<br>• Manages PBKDF2 password hashing and secure token sessions.<br>• Executes fast, local ML model inference (TFLite CNN leaf scanning, Random Forest crop/yield ML).<br>• Connects to Groq LLM for AI consultation and fetches live weather & market APIs. |
 | **Tier 3** | **Data Tier** _(Persistence & Model Storage Layer)_ | Supabase Managed PostgreSQL Cloud     | PostgreSQL RDBMS, Flask-SQLAlchemy ORM, Local Disk Storage | • Stores relational database tables (`users`, `disease_history`, `prediction_history`).<br>• Maintains database connection pooling (Session mode) for reliable transactions.<br>• Stores version-locked pre-trained ML weights (`.tflite`, `.joblib`) and label mappings.                                                        |
 
@@ -122,7 +122,7 @@ Agri-ai/
 │   ├── models_db.py          # SQLAlchemy Models (User, PredictionHistory)
 │   ├── requirements.txt      # Python Dependencies (LiteRT, Flask, Gunicorn, psycopg2)
 │   ├── models/
-│   │   ├── disease_model.tflite  # MobileNetV2 disease detection model (TFLite format, ~9.5 MB)
+│   │   ├── disease_model.tflite  # Custom Deep CNN disease detection model (TFLite format, ~6.4 MB)
 │   │   ├── crop_model.joblib     # Scikit-Learn Random Forest crop recommender
 │   │   ├── yield_model.joblib    # Scikit-Learn Random Forest yield predictor
 │   │   └── class_indices.json   # Disease class label mapping (38 plant/disease classes)
@@ -136,7 +136,7 @@ Agri-ai/
 │   │   ├── market.py         # Mandi Commodity Market Price Trends API
 │   │   └── chatbot.py        # Multilingual Farmer Assistant (GPT-OSS LLM) API
 │   └── ml_training/          # ML Model Training Notebooks
-│       ├── disease_detection.ipynb  # TensorFlow/Keras MobileNetV2 CNN trainer & TFLite exporter
+│       ├── disease_detection.ipynb  # TensorFlow Custom Deep CNN trainer & TFLite exporter
 │       ├── crop_recommendation.ipynb # Scikit-Learn Crop Recommender trainer
 │       └── yield_prediction.ipynb   # Scikit-Learn FAO Yield Predictor trainer
 ├── frontend/
@@ -245,11 +245,11 @@ The application can be deployed using a **free-forever cloud stack**:
 
 ## 🔑 Environment Variables
 
-| Variable       | Location                       | Description                                                                  |
-| -------------- | ------------------------------ | ---------------------------------------------------------------------------- |
-| `GROQ_API_KEY` | `backend/.env` + Render        | Groq API key for AI chatbot                                                  |
-| `DATABASE_URL` | `backend/.env` + Render        | Supabase PostgreSQL connection pooler URI                                    |
-| `VITE_API_URL` | `frontend/.env.local` + Vercel | Full URL of the backend API (no trailing `/api`)                             |
+| Variable       | Location                       | Description                                      |
+| -------------- | ------------------------------ | ------------------------------------------------ |
+| `GROQ_API_KEY` | `backend/.env` + Render        | Groq API key for AI chatbot                      |
+| `DATABASE_URL` | `backend/.env` + Render        | Supabase PostgreSQL connection pooler URI        |
+| `VITE_API_URL` | `frontend/.env.local` + Vercel | Full URL of the backend API (no trailing `/api`) |
 
 ---
 

@@ -59,6 +59,18 @@ DISEASE_ADVICE_MAP = {
     "Tomato___Tomato_Yellow_Leaf_Curl_Virus": "Control whitefly vector with sticky traps or insecticidal soap; remove and isolate infected plants.",
     "Tomato___Tomato_mosaic_virus": "Remove and burn infected plants; disinfect tools and hands; control aphid and leafhopper vectors.",
     "Tomato___healthy": "Tomato plant is healthy! Continue regular staking, pruning, and consistent drip irrigation.",
+    "Pepper__bell___Bacterial_spot": "Apply copper-maneb bactericide spray; avoid overhead sprinkling; rotate crops on a 2-3 year cycle.",
+    "Pepper__bell___healthy": "Bell pepper plant is healthy! Maintain consistent soil moisture and inspect regularly for aphids.",
+    "Tomato_Bacterial_spot": "Apply copper bactericide mixed with mancozeb; avoid working in fields when plants are wet.",
+    "Tomato_Early_blight": "Apply copper or chlorothalonil fungicide; prune lower leaf suckers; apply mulch around base.",
+    "Tomato_Late_blight": "Apply systemic copper or mancozeb fungicide immediately; destroy heavily infected foliage to stop outbreak.",
+    "Tomato_Leaf_Mold": "Enhance greenhouse ventilation and lower humidity; avoid foliage wetting; apply copper fungicide.",
+    "Tomato_Septoria_leaf_spot": "Remove infected lower leaves; apply preventative chlorothalonil or copper spray; keep garden weed-free.",
+    "Tomato_Spider_mites_Two_spotted_spider_mite": "Spray with neem oil, insecticidal soap, or miticide; increase humidity; release predatory mites.",
+    "Tomato__Target_Spot": "Apply chlorothalonil or azoxystrobin fungicide; prune lower branches for canopy airflow.",
+    "Tomato__Tomato_YellowLeaf__Curl_Virus": "Control whitefly vector with sticky traps or insecticidal soap; remove and isolate infected plants.",
+    "Tomato__Tomato_mosaic_virus": "Remove and burn infected plants; disinfect tools and hands; control aphid and leafhopper vectors.",
+    "Tomato_healthy": "Tomato plant is healthy! Continue regular staking, pruning, and consistent drip irrigation.",
     "Rice___Rice_Blast": "Apply tricyclazole or azoxystrobin fungicide; maintain optimal flood water level; avoid excess nitrogen fertilizer.",
     "Wheat___Stripe_Rust": "Apply triazole or strobilurin fungicide; plant disease-resistant wheat cultivars.",
     "Cedar_apple_rust": "Remove nearby eastern red cedar trees if possible. Apply myclobutanil or copper-based fungicide at blossom bud show.",
@@ -156,11 +168,34 @@ if os.path.exists(CLASS_INDEX_PATH):
     try:
         with open(CLASS_INDEX_PATH, "r") as f:
             class_indices = json.load(f)
-        _idx_to_label = {int(v): k for k, v in class_indices.items()}
+        for k, v in class_indices.items():
+            if isinstance(v, int) or (isinstance(v, str) and v.isdigit()):
+                _idx_to_label[int(v)] = str(k)
+            elif isinstance(k, int) or (isinstance(k, str) and k.isdigit()):
+                _idx_to_label[int(k)] = str(v)
     except Exception as e:
         print("Warning: Could not parse class_indices.json:", e)
 
 _tflite_interpreter, _tflite_input_details, _tflite_output_details = load_tflite_interpreter(TFLITE_MODEL_PATH)
+
+KERAS_MODEL_PATHS = [
+    os.path.join(MODEL_DIR, "plant_disease_model.keras"),
+    os.path.join(MODEL_DIR, "plant_disease_model.h5"),
+]
+
+def load_keras_model():
+    for p in KERAS_MODEL_PATHS:
+        if os.path.exists(p):
+            try:
+                import tensorflow as tf
+                model = tf.keras.models.load_model(p, compile=False)
+                print(f"Disease Detection: Successfully loaded Keras Custom CNN model from {p}")
+                return model
+            except Exception as e:
+                print(f"Warning: Could not load Keras model from {p}:", e)
+    return None
+
+_keras_model = load_keras_model()
 
 MOCK_CLASSES = [
     {"label": "Apple Scab", "advice": "Apply sulfur or myclobutanil fungicide; rake and dispose of fallen leaves."},
@@ -194,11 +229,45 @@ def predict_tflite(image_bytes: bytes):
     img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
     img = img.resize((224, 224), Image.BILINEAR)
     arr = np.array(img, dtype=np.float32)
+    if arr.max() > 1.0:
+        arr = arr / 255.0
     input_tensor = arr[np.newaxis, ...]
 
     _tflite_interpreter.set_tensor(_tflite_input_details[0]["index"], input_tensor)
     _tflite_interpreter.invoke()
     probabilities = _tflite_interpreter.get_tensor(_tflite_output_details[0]["index"])[0]
+
+    top_indices = np.argsort(probabilities)[::-1][:3]
+    top_idx = int(top_indices[0])
+    confidence = float(probabilities[top_idx]) * 100.0
+    label = _idx_to_label.get(top_idx, f"Class_{top_idx}")
+    advice = get_advice_for_label(label)
+
+    top_3 = []
+    for idx in top_indices:
+        i = int(idx)
+        top_3.append({
+            "label": _idx_to_label.get(i, f"Class_{i}"),
+            "confidence_percent": round(float(probabilities[i]) * 100.0, 2)
+        })
+
+    return {
+        "label": label,
+        "confidence": round(confidence, 2),
+        "advice": advice,
+        "top_3": top_3,
+    }
+
+
+def predict_keras(image_bytes: bytes):
+    img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    img = img.resize((224, 224), Image.BILINEAR)
+    arr = np.array(img, dtype=np.float32)
+    if arr.max() > 1.0:
+        arr = arr / 255.0
+    input_tensor = arr[np.newaxis, ...]
+
+    probabilities = _keras_model.predict(input_tensor, verbose=0)[0]
 
     top_indices = np.argsort(probabilities)[::-1][:3]
     top_idx = int(top_indices[0])
@@ -236,17 +305,26 @@ def predict_disease():
     filename = secure_filename(file.filename)
     image_bytes = file.read()
 
+    prediction = None
+    source = "mock"
+
     if _tflite_interpreter is not None:
         try:
             prediction = predict_tflite(image_bytes)
-            source = "tflite_model"
+            source = "tflite_custom_cnn"
         except Exception as err:
-            print("Error during TFLite inference, falling back:", err)
-            prediction = mock_predict(image_bytes)
-            source = "mock_fallback"
-    else:
+            print("Error during TFLite custom CNN inference, attempting Keras fallback:", err)
+
+    if prediction is None and _keras_model is not None:
+        try:
+            prediction = predict_keras(image_bytes)
+            source = "keras_custom_cnn"
+        except Exception as kerr:
+            print("Error during Keras custom CNN inference:", kerr)
+
+    if prediction is None:
         prediction = mock_predict(image_bytes)
-        source = "mock"
+        source = "mock_fallback" if (_tflite_interpreter or _keras_model) else "mock"
 
     rec_action = prediction.get("advice") or "Consult local agronomist for detailed treatment."
 

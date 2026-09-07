@@ -319,7 +319,7 @@ export default function Chatbot() {
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       components={{
-                        table: ({ node, ...props }) => (
+                        table: (props) => (
                           <div className="chatbot-markdown-table-wrapper">
                             <table {...props} />
                           </div>

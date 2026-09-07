@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import {
@@ -70,8 +70,19 @@ export default function DiseaseDetection() {
   };
 
   useEffect(() => {
-    fetchHistory();
+    let isMounted = true;
+    api.getDiseaseHistory()
+      .then((data) => {
+        if (isMounted && data && Array.isArray(data.history)) {
+          setHistoryLogs(data.history);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load disease history:", err);
+      });
+
     return () => {
+      isMounted = false;
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
       }
@@ -839,7 +850,7 @@ export default function DiseaseDetection() {
                 {historyLogs.map((log) => {
                   const isExpanded = expandedLogId === log.id;
                   return (
-                    <React.Fragment key={log.id}>
+                    <Fragment key={log.id}>
                       <tr
                         onClick={() => setExpandedLogId(isExpanded ? null : log.id)}
                         style={{
@@ -956,7 +967,7 @@ export default function DiseaseDetection() {
                           </td>
                         </tr>
                       )}
-                    </React.Fragment>
+                    </Fragment>
                   );
                 })}
               </tbody>
