@@ -21,6 +21,11 @@
 |  💬  | **Multilingual AI Assistant**  | Instant 24/7 agricultural consultation in **English**, **Hindi (हिंदी)**, and **Bengali (বাংলা)**.                                                 | Groq AI Multilingual LLM (OpenAI GPT-OSS 120B / 20B)     |
 |  🌗  | **Adaptive Theme System**      | Glassmorphic UI with automatic Light & Dark mode support and responsive mobile drawer navigation.                                                  | Vanilla CSS3 Variables & Glassmorphism                   |
 
+> **🌿 Supported Disease Classes (15 Classes across Pepper, Potato & Tomato)**:
+> - **Pepper (Bell)**: Bacterial Spot, Healthy
+> - **Potato**: Early Blight, Late Blight, Healthy
+> - **Tomato**: Bacterial Spot, Early Blight, Late Blight, Leaf Mold, Septoria Leaf Spot, Two-Spotted Spider Mites, Target Spot, Yellow Leaf Curl Virus, Mosaic Virus, Healthy
+
 ---
 
 ## 🛠️ Technology Stack
@@ -122,10 +127,10 @@ Agri-ai/
 │   ├── models_db.py          # SQLAlchemy Models (User, PredictionHistory)
 │   ├── requirements.txt      # Python Dependencies (LiteRT, Flask, Gunicorn, psycopg2)
 │   ├── models/
-│   │   ├── disease_model.tflite  # Custom Deep CNN disease detection model (TFLite format, ~6.4 MB)
+│   │   ├── disease_model.tflite  # Custom Deep CNN disease detection model (TFLite format)
 │   │   ├── crop_model.joblib     # Scikit-Learn Random Forest crop recommender
 │   │   ├── yield_model.joblib    # Scikit-Learn Random Forest yield predictor
-│   │   └── class_indices.json   # Disease class label mapping (38 plant/disease classes)
+│   │   └── class_indices.json   # Disease class label mapping (15 plant/disease classes: Pepper, Potato, Tomato)
 │   ├── routes/
 │   │   ├── auth.py           # User Authentication Routes & Profile Context
 │   │   ├── disease.py        # TFLite Image Scanner & Leaf Disease API
@@ -136,7 +141,7 @@ Agri-ai/
 │   │   ├── market.py         # Mandi Commodity Market Price Trends API
 │   │   └── chatbot.py        # Multilingual Farmer Assistant (GPT-OSS LLM) API
 │   └── ml_training/          # ML Model Training Notebooks
-│       ├── disease_detection.ipynb  # TensorFlow Custom Deep CNN trainer & TFLite exporter
+│       ├── disease_detection.ipynb  # Clean 6-step Custom CNN trainer & TFLite exporter (15 classes, 10 epochs)
 │       ├── crop_recommendation.ipynb # Scikit-Learn Crop Recommender trainer
 │       └── yield_prediction.ipynb   # Scikit-Learn FAO Yield Predictor trainer
 ├── frontend/
