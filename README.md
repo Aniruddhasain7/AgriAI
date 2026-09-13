@@ -43,12 +43,12 @@
 | **Machine Learning**        | Scikit-Learn            | `v1.6.1`             | Random Forest Crop Yield & Crop Recommender                                                 |
 | **Data Processing**         | NumPy & Pandas          | `v1.26.4 / v2.2.2`   | Dataset transformations & array calculations                                                |
 | **AI Assistant**            | Groq AI API             | `>=0.18.0`           | Multilingual agricultural LLM chatbot (`openai/gpt-oss-120b` / `openai/gpt-oss-20b`)        |
-| **Database ORM**            | Flask-SQLAlchemy        | `v3.1.1`             | Unified PostgreSQL ORM (Supabase / Cloud / Docker)                                          |
+| **Database ORM**            | Flask-SQLAlchemy        | `v3.1.1`             | Unified PostgreSQL ORM (Neon / Cloud / Docker)                                              |
 | **DB Driver**               | psycopg2-binary         | `v2.9.9`             | PostgreSQL Python connector                                                                 |
 | **Production Server**       | Gunicorn                | `v22.0.0`            | Python WSGI HTTP server                                                                     |
 | **Containerization**        | Docker                  | —                    | Python 3.11.9-slim locked runtime for cloud services                                        |
 | **Deployment (Backend)**    | Render                  | —                    | Free Docker web service (Flask API)                                                         |
-| **Deployment (Database)**   | Supabase                | —                    | Free managed PostgreSQL (500 MB)                                                            |
+| **Deployment (Database)**   | Neon                    | —                    | Free Serverless PostgreSQL (500 MB)                                                          |
 | **Deployment (Frontend)**   | Vercel                  | —                    | Free static React SPA hosting                                                               |
 
 ---
@@ -94,9 +94,9 @@ graph TB
         Flask --> ExternalAPIs
     end
 
-    subgraph Tier3["Tier 3: Data Tier (Persistence & Model Storage - Supabase)"]
+    subgraph Tier3["Tier 3: Data Tier (Persistence & Model Storage - Neon)"]
         direction TB
-        DB[("PostgreSQL Database (Supabase Cloud)")]
+        DB[("PostgreSQL Database (Neon Cloud)")]
         Models[("Serialized Model Artifacts (.tflite & .joblib)")]
     end
 
@@ -113,7 +113,7 @@ graph TB
 | :--------: | :-------------------------------------------------- | :------------------------------------ | :--------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Tier 1** | **Presentation Tier** _(Client Layer)_              | Vercel Static Cloud                   | React 19, Vite, Vanilla CSS3 Glassmorphism, i18next        | • Renders responsive single-page user interfaces.<br>• Handles live camera access and crop leaf image pre-processing.<br>• Manages client-side routing, state, and multi-language switching (EN/HI/BN).<br>• Formats and dispatches HTTPS REST requests to backend API.                                                          |
 | **Tier 2** | **Application Tier** _(Business & AI Logic Layer)_  | Render Web Service (Docker Container) | Flask 3, Gunicorn, LiteRT, Scikit-Learn, Groq              | • Hosts REST API endpoints, routing, CORS, and request verification.<br>• Manages PBKDF2 password hashing and secure token sessions.<br>• Executes fast, local ML model inference (TFLite CNN leaf scanning, Random Forest crop/yield ML).<br>• Connects to Groq LLM for AI consultation and fetches live weather & market APIs. |
-| **Tier 3** | **Data Tier** _(Persistence & Model Storage Layer)_ | Supabase Managed PostgreSQL Cloud     | PostgreSQL RDBMS, Flask-SQLAlchemy ORM, Local Disk Storage | • Stores relational database tables (`users`, `disease_history`, `prediction_history`).<br>• Maintains database connection pooling (Session mode) for reliable transactions.<br>• Stores version-locked pre-trained ML weights (`.tflite`, `.joblib`) and label mappings.                                                        |
+| **Tier 3** | **Data Tier** _(Persistence & Model Storage Layer)_ | Neon Serverless PostgreSQL Cloud      | PostgreSQL RDBMS, Flask-SQLAlchemy ORM, Local Disk Storage | • Stores relational database tables (`users`, `disease_history`, `prediction_history`).<br>• Maintains database connection pooling (Session mode) for reliable transactions.<br>• Stores version-locked pre-trained ML weights (`.tflite`, `.joblib`) and label mappings.                                                        |
 
 ---
 
@@ -223,21 +223,21 @@ The application can be deployed using a **free-forever cloud stack**:
 | ------------ | -------------------------------- | ------------------------------------------------------------- |
 | **Frontend** | [Vercel](https://vercel.com)     | Auto-deploys static SPA from `main` branch                    |
 | **Backend**  | [Render](https://render.com)     | Docker web service (spins down after inactivity on free tier) |
-| **Database** | [Supabase](https://supabase.com) | Free managed PostgreSQL (500 MB limit)                        |
+| **Database** | [Neon](https://neon.tech)        | Free Serverless PostgreSQL (500 MB limit)                     |
 
 ### Backend — Render (Docker)
 
 1. Create a **Web Service** on Render.
 2. Connect your GitHub repo → set **Root Directory**: `backend`, **Runtime**: `Docker`.
 3. Add environment variables:
-   - `DATABASE_URL` → Supabase connection pooler URI (Session mode, port 6543).
+   - `DATABASE_URL` → Neon connection pooler URI.
    - `GROQ_API_KEY` → Your Groq API key (from console.groq.com).
 
-### Database — Supabase
+### Database — Neon
 
-1. Create a free project at [supabase.com](https://supabase.com).
-2. Go to **Settings → Database → Connection pooling → Session mode**.
-3. Copy the URI and set it as `DATABASE_URL` in Render.
+1. Create a free project at [neon.tech](https://neon.tech).
+2. Enable connection pooling in the project dashboard.
+3. Copy the pooled URI and set it as `DATABASE_URL` in `backend/.env` (and Render for deployment).
 
 ### Frontend — Vercel
 
@@ -253,7 +253,7 @@ The application can be deployed using a **free-forever cloud stack**:
 | Variable       | Location                       | Description                                      |
 | -------------- | ------------------------------ | ------------------------------------------------ |
 | `GROQ_API_KEY` | `backend/.env` + Render        | Groq API key for AI chatbot                      |
-| `DATABASE_URL` | `backend/.env` + Render        | Supabase PostgreSQL connection pooler URI        |
+| `DATABASE_URL` | `backend/.env` + Render        | Neon PostgreSQL connection pooler URI             |
 | `VITE_API_URL` | `frontend/.env.local` + Vercel | Full URL of the backend API (no trailing `/api`) |
 
 ---
