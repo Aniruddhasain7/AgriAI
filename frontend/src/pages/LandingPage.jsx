@@ -17,71 +17,89 @@ import {
   Award,
   Mail,
   Lock,
-  Globe,
   X,
   FileText,
   Check,
-  Home,
-  Info,
-  BookOpen,
-  HelpCircle,
   Compass,
+  Info,
+  Share2,
 } from "lucide-react";
 import heroImg from "../assets/hero.jpg";
-
-const HIGHLIGHTS = [
-  {
-    title: "AI Foliage Disease Scanner",
-    icon: Scan,
-    badge: "Computer Vision Model",
-    desc: "Computer vision diagnosis of plant leaf infections with actionable organic and chemical treatment advice.",
-  },
-  {
-    title: "Crop Harvest Yield Estimation",
-    icon: TrendingUp,
-    badge: "Harvest Yield Predictor",
-    desc: "Predict harvest yields per hectare based on historical rainfall, climate, and pesticide inputs.",
-  },
-  {
-    title: "Live Weather Advisory",
-    icon: CloudSun,
-    badge: "Real-Time Meteo Radar",
-    desc: "Real-time field weather observations and 3-day customized recommendations to optimize spraying & irrigation.",
-  },
-  {
-    title: "Multilingual Farmer AI",
-    icon: Bot,
-    badge: "Multilingual AI Advisor",
-    desc: "Instant agricultural consultation in English, Hindi, and Bengali for crop health and fertilizer questions.",
-  },
-];
-
-const STEPS = [
-  {
-    step: "01",
-    title: "Input Farm & Soil Data",
-    desc: "Upload a crop leaf photograph or input your local soil N-P-K, pH, and climate parameters into our secure portal.",
-    icon: Layers,
-  },
-  {
-    step: "02",
-    title: "AI Neural Network Evaluation",
-    desc: "Our computer vision and intelligent machine learning models process your input in real time.",
-    icon: Cpu,
-  },
-  {
-    step: "03",
-    title: "Receive Smart Action Plan",
-    desc: "Get instant disease diagnoses, yield forecasts, market price trends, and customized farming advice.",
-    icon: CheckCircle2,
-  },
-];
 
 export default function LandingPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [activeModal, setActiveModal] = useState(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+
+  const highlights = [
+    {
+      title: t("landing.feat_disease_title", "AI Foliage Disease Scanner"),
+      icon: Scan,
+      badge: t("landing.feat_disease_badge", "Computer Vision Model"),
+      desc: t(
+        "landing.feat_disease_desc",
+        "Computer vision diagnosis of plant leaf infections with actionable organic and chemical treatment advice.",
+      ),
+    },
+    {
+      title: t("landing.feat_yield_title", "Crop Harvest Yield Estimation"),
+      icon: TrendingUp,
+      badge: t("landing.feat_yield_badge", "Harvest Yield Predictor"),
+      desc: t(
+        "landing.feat_yield_desc",
+        "Predict harvest yields per hectare based on historical rainfall, climate, and pesticide inputs.",
+      ),
+    },
+    {
+      title: t("landing.feat_weather_title", "Live Weather Advisory"),
+      icon: CloudSun,
+      badge: t("landing.feat_weather_badge", "Real-Time Meteo Radar"),
+      desc: t(
+        "landing.feat_weather_desc",
+        "Real-time field weather observations and 3-day customized recommendations to optimize spraying & irrigation.",
+      ),
+    },
+    {
+      title: t("landing.feat_chat_title", "Multilingual Farmer AI"),
+      icon: Bot,
+      badge: t("landing.feat_chat_badge", "Multilingual AI Advisor"),
+      desc: t(
+        "landing.feat_chat_desc",
+        "Instant agricultural consultation in English, Hindi, and Bengali for crop health and fertilizer questions.",
+      ),
+    },
+  ];
+
+  const steps = [
+    {
+      step: "01",
+      title: t("landing.step1_title", "Input Farm & Soil Data"),
+      desc: t(
+        "landing.step1_desc",
+        "Upload a crop leaf photograph or input your local soil N-P-K, pH, and climate parameters into our secure portal.",
+      ),
+      icon: Layers,
+    },
+    {
+      step: "02",
+      title: t("landing.step2_title", "AI Neural Network Evaluation"),
+      desc: t(
+        "landing.step2_desc",
+        "Our computer vision and intelligent machine learning models process your input in real time.",
+      ),
+      icon: Cpu,
+    },
+    {
+      step: "03",
+      title: t("landing.step3_title", "Receive Smart Action Plan"),
+      desc: t(
+        "landing.step3_desc",
+        "Get instant disease diagnoses, yield forecasts, market price trends, and customized farming advice.",
+      ),
+      icon: CheckCircle2,
+    },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -105,6 +123,13 @@ export default function LandingPage() {
     });
   };
 
+  const scrollToHowItWorks = () => {
+    const el = document.getElementById("how-it-works");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   const handleGetStarted = (e) => {
     e?.preventDefault();
     const token = localStorage.getItem("agriai_token");
@@ -121,7 +146,6 @@ export default function LandingPage() {
       navigate("/signup");
     }
   };
-
 
   return (
     <>
@@ -141,7 +165,12 @@ export default function LandingPage() {
           <div style={{ textAlign: "left" }}>
             <div className="page-badge">
               <Sparkles size={14} />
-              <span>AI-Powered Smart Agriculture Platform</span>
+              <span>
+                {t(
+                  "landing.hero_badge",
+                  "AI-Powered Smart Agriculture Platform",
+                )}
+              </span>
             </div>
 
             <h1
@@ -153,9 +182,9 @@ export default function LandingPage() {
                 letterSpacing: "-1.5px",
               }}
             >
-              Smarter Farming with <br />
+              {t("landing.hero_title_prefix", "Smarter Farming with")} <br />
               <span style={{ color: "var(--primary-500)" }}>
-                Artificial Intelligence
+                {t("landing.hero_title_highlight", "Artificial Intelligence")}
               </span>
             </h1>
 
@@ -167,9 +196,10 @@ export default function LandingPage() {
                 lineHeight: 1.65,
               }}
             >
-              AgriAI combines deep learning computer vision, random forest yield
-              predictors, live meteorological forecasts, and interactive AI
-              consultation to maximize crop yields.
+              {t(
+                "landing.hero_desc",
+                "AgriAI combines deep learning computer vision, random forest yield predictors, live meteorological forecasts, and interactive AI consultation to maximize crop yields.",
+              )}
             </p>
 
             <div
@@ -183,9 +213,15 @@ export default function LandingPage() {
               <button
                 onClick={handleGetStarted}
                 className="btn-primary"
-                style={{ width: "auto", padding: "14px 36px", fontSize: "16px", cursor: "pointer", border: "none" }}
+                style={{
+                  width: "auto",
+                  padding: "14px 36px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                  border: "none",
+                }}
               >
-                <span>Get Started Free</span>
+                <span>{t("landing.get_started", "Get Started Free")}</span>
                 <ArrowRight size={18} />
               </button>
             </div>
@@ -210,10 +246,13 @@ export default function LandingPage() {
                   99.5%
                 </p>
                 <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>
-                  ML Accuracy
+                  {t("landing.stat_accuracy", "ML Accuracy")}
                 </p>
               </div>
-              <div className="desktop-only" style={{ width: "1px", background: "var(--border-color)" }} />
+              <div
+                className="desktop-only"
+                style={{ width: "1px", background: "var(--border-color)" }}
+              />
               <div>
                 <p
                   style={{
@@ -225,18 +264,25 @@ export default function LandingPage() {
                   20k+
                 </p>
                 <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>
-                  PlantVillage Dataset
+                  {t("landing.stat_dataset", "PlantVillage Dataset")}
                 </p>
               </div>
-              <div className="desktop-only" style={{ width: "1px", background: "var(--border-color)" }} />
+              <div
+                className="desktop-only"
+                style={{ width: "1px", background: "var(--border-color)" }}
+              />
               <div>
                 <p
-                  style={{ fontSize: "26px", fontWeight: 800, color: "#3b82f6" }}
+                  style={{
+                    fontSize: "26px",
+                    fontWeight: 800,
+                    color: "#3b82f6",
+                  }}
                 >
                   3 Lang
                 </p>
                 <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>
-                  Multilingual AI
+                  {t("landing.stat_lang", "Multilingual AI")}
                 </p>
               </div>
             </div>
@@ -312,10 +358,18 @@ export default function LandingPage() {
                       color: "#ffffff",
                     }}
                   >
-                    AgriAI Precision Platform
+                    {t(
+                      "landing.hero_banner_title",
+                      "AgriAI Precision Platform",
+                    )}
                   </p>
-                  <p style={{ fontSize: "12.5px", color: "var(--primary-400)" }}>
-                    Real-Time Field Intelligence & Advisory
+                  <p
+                    style={{ fontSize: "12.5px", color: "var(--primary-400)" }}
+                  >
+                    {t(
+                      "landing.hero_banner_sub",
+                      "Real-Time Field Intelligence & Advisory",
+                    )}
                   </p>
                 </div>
               </div>
@@ -328,11 +382,16 @@ export default function LandingPage() {
             <h2
               style={{ fontSize: "28px", fontWeight: 800, marginBottom: "8px" }}
             >
-              Platform Details & Core Intelligence
+              {t(
+                "landing.highlights_title",
+                "Platform Details & Core Intelligence",
+              )}
             </h2>
             <p style={{ color: "var(--text-muted)", fontSize: "16px" }}>
-              Explore how artificial intelligence optimizes every phase of
-              agricultural decision making.
+              {t(
+                "landing.highlights_sub",
+                "Explore how artificial intelligence optimizes every phase of agricultural decision making.",
+              )}
             </p>
           </div>
 
@@ -343,7 +402,7 @@ export default function LandingPage() {
               gap: "24px",
             }}
           >
-            {HIGHLIGHTS.map((h, idx) => {
+            {highlights.map((h, idx) => {
               const Icon = h.icon;
               return (
                 <div
@@ -421,20 +480,24 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section style={{ textAlign: "center" }}>
+        <section id="how-it-works" style={{ textAlign: "center" }}>
           <div style={{ maxWidth: "600px", margin: "0 auto 36px" }}>
             <div className="page-badge" style={{ margin: "0 auto 12px" }}>
               <ShieldCheck size={14} />
-              <span>Simple 3-Step Process</span>
+              <span>
+                {t("landing.workflow_badge", "Simple 3-Step Process")}
+              </span>
             </div>
             <h2
               style={{ fontSize: "32px", fontWeight: 800, marginBottom: "8px" }}
             >
-              How AgriAI Works
+              {t("landing.workflow_title", "How AgriAI Works")}
             </h2>
             <p style={{ color: "var(--text-muted)", fontSize: "16px" }}>
-              From diagnosis to harvest predictions, get actionable agricultural
-              guidance in seconds.
+              {t(
+                "landing.workflow_sub",
+                "From diagnosis to harvest predictions, get actionable agricultural guidance in seconds.",
+              )}
             </p>
           </div>
 
@@ -445,7 +508,7 @@ export default function LandingPage() {
               gap: "24px",
             }}
           >
-            {STEPS.map((s, idx) => {
+            {steps.map((s, idx) => {
               const Icon = s.icon;
               return (
                 <div
@@ -533,9 +596,16 @@ export default function LandingPage() {
               style={{ color: "var(--primary-500)", marginBottom: "16px" }}
             />
             <h2
-              style={{ fontSize: "32px", fontWeight: 800, marginBottom: "12px" }}
+              style={{
+                fontSize: "32px",
+                fontWeight: 800,
+                marginBottom: "12px",
+              }}
             >
-              Ready to Transform Your Harvest Yields?
+              {t(
+                "landing.cta_heading",
+                "Ready to Transform Your Harvest Yields?",
+              )}
             </h2>
             <p
               style={{
@@ -544,8 +614,10 @@ export default function LandingPage() {
                 marginBottom: "28px",
               }}
             >
-              Join thousands of farmers using artificial intelligence to optimize
-              field health and decision making.
+              {t(
+                "landing.cta_desc",
+                "Join thousands of farmers using artificial intelligence to optimize field health and decision making.",
+              )}
             </p>
 
             <button
@@ -560,7 +632,7 @@ export default function LandingPage() {
                 border: "none",
               }}
             >
-              <span>Get Started Free Now</span>
+              <span>{t("landing.cta_btn", "Get Started Free Now")}</span>
               <ArrowRight size={18} />
             </button>
           </div>
@@ -583,14 +655,15 @@ export default function LandingPage() {
               <p className="footer-brand-desc">
                 {t(
                   "footer.desc",
-                  "Next-generation precision agriculture platform integrating deep learning foliage diagnostics, climate-informed yield forecasting, and multilingual AI advisory.",
+                  "Next-generation precision agriculture platform combining deep learning crop diagnostics, yield prediction, and multilingual AI advisory.",
                 )}
               </p>
 
-              <div className="footer-social-wrapper">
-                <p className="footer-social-title">
-                  {t("footer.connect_with_us", "Connect With Us")}
-                </p>
+              <div className="footer-social-section">
+                <h4 className="footer-col-title footer-social-heading">
+                  <Share2 size={15} />
+                  <span>{t("footer.connect_with_us", "Connect with Us")}</span>
+                </h4>
                 <div className="footer-social-links">
                   <a
                     href="https://github.com/Aniruddhasain7"
@@ -655,146 +728,70 @@ export default function LandingPage() {
                       <circle cx="4" cy="4" r="2" />
                     </svg>
                   </a>
-
-                  <a
-                    href="https://github.com/Aniruddhasain7/AgriAI"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="footer-social-btn"
-                    title="AgriAI Community"
-                    aria-label="AgriAI Community"
-                  >
-                    <Globe size={17} />
-                  </a>
                 </div>
               </div>
             </div>
 
-            <div className="footer-col footer-nav-col">
+            <div className="footer-col">
               <h4 className="footer-col-title">
-                <Compass size={16} />
+                <Compass size={15} />
                 <span>{t("footer.nav_title", "Navigation")}</span>
               </h4>
               <ul className="footer-links-list">
                 <li className="footer-link-item">
                   <Link to="/" onClick={scrollToTop}>
-                    <Home size={14} />
-                    <span>{t("footer.home", "Home")}</span>
+                    {t("footer.home", "Home")}
                   </Link>
                 </li>
                 <li className="footer-link-item">
                   <Link to="/dashboard" onClick={scrollToTop}>
-                    <Sprout size={14} />
-                    <span>
-                      {t("footer.tools_dashboard", "Tools Dashboard")}
-                    </span>
-                  </Link>
-                </li>
-                <li className="footer-link-item">
-                  <Link to="/chatbot" onClick={scrollToTop}>
-                    <Bot size={14} />
-                    <span>{t("footer.ai_chatbot", "AI Chatbot")}</span>
+                    {t("footer.tools_dashboard", "Tools Dashboard")}
                   </Link>
                 </li>
               </ul>
             </div>
 
-            <div className="footer-col footer-about-col">
+            <div className="footer-col">
               <h4 className="footer-col-title">
-                <Info size={16} />
+                <Info size={15} />
                 <span>{t("footer.about_title", "About")}</span>
               </h4>
               <ul className="footer-links-list">
                 <li className="footer-link-item">
                   <button onClick={() => setActiveModal("data")}>
-                    <Info size={14} />
-                    <span>{t("footer.about_project", "About Project")}</span>
+                    {t("footer.about_agriai", "About AgriAI")}
                   </button>
                 </li>
                 <li className="footer-link-item">
-                  <button onClick={() => setActiveModal("security")}>
-                    <BookOpen size={14} />
-                    <span>{t("footer.how_it_works", "How It Works")}</span>
-                  </button>
-                </li>
-                <li className="footer-link-item">
-                  <button onClick={() => setActiveModal("data")}>
-                    <FileText size={14} />
-                    <span>{t("footer.documentation", "Documentation")}</span>
+                  <button onClick={scrollToHowItWorks}>
+                    {t("footer.how_it_works", "How It Works")}
                   </button>
                 </li>
               </ul>
             </div>
 
-            <div className="footer-col footer-contact-col">
+            <div className="footer-col">
               <h4 className="footer-col-title">
-                <Mail size={16} />
+                <Mail size={15} />
                 <span>{t("footer.contact_title", "Contact")}</span>
               </h4>
               <ul className="footer-links-list">
                 <li className="footer-link-item">
                   <a href="mailto:aniruddhasain94@gmail.com">
-                    <Mail size={14} />
-                    <span>{t("footer.contact_us", "Contact Us")}</span>
+                    {t("footer.contact_us", "Contact Us")}
                   </a>
                 </li>
                 <li className="footer-link-item">
-                  <button onClick={() => setActiveModal("terms")}>
-                    <HelpCircle size={14} />
-                    <span>{t("footer.faqs", "FAQs")}</span>
-                  </button>
-                </li>
-                <li className="footer-link-item">
-                  <button onClick={() => setActiveModal("privacy")}>
-                    <Lock size={14} />
-                    <span>{t("footer.privacy_policy", "Privacy Policy")}</span>
-                  </button>
+                  <a href="mailto:aniruddhasain94@gmail.com?subject=AgriAI%20Feedback%20or%20Issue">
+                    {t("footer.feedback_issues", "Feedback & Issues")}
+                  </a>
                 </li>
               </ul>
             </div>
           </div>
 
-          <div className="footer-trust-strip">
-            <div className="trust-item">
-              <div className="trust-icon-box">
-                <Lock size={16} />
-              </div>
-              <div>
-                <p>{t("footer.trust_secure", "Secure & Private")}</p>
-              </div>
-            </div>
-
-            <div className="trust-item">
-              <div className="trust-icon-box">
-                <Cpu size={16} />
-              </div>
-              <div>
-                <p>{t("footer.trust_fast", "Fast ML Inference")}</p>
-              </div>
-            </div>
-
-            <div className="trust-item">
-              <div className="trust-icon-box">
-                <Globe size={16} />
-              </div>
-              <div>
-                <p>{t("footer.trust_multi", "Multilingual AI")}</p>
-              </div>
-            </div>
-
-            <div className="trust-item">
-              <div className="trust-icon-box">
-                <Sprout size={16} />
-              </div>
-              <div>
-                <p>{t("footer.trust_free", "100% Free Access")}</p>
-              </div>
-            </div>
-          </div>
-
           <div className="footer-bottom-bar">
             <div className="footer-copyright">
-              <Sprout size={15} />
               <span>
                 &copy; {new Date().getFullYear()}{" "}
                 {t(
@@ -812,10 +809,6 @@ export default function LandingPage() {
                 <span className="bullet">&bull;</span>
                 <button onClick={() => setActiveModal("terms")}>
                   {t("footer.terms_of_service", "Terms of Service")}
-                </button>
-                <span className="bullet">&bull;</span>
-                <button onClick={() => setActiveModal("security")}>
-                  {t("footer.security", "Security")}
                 </button>
                 <span className="bullet">&bull;</span>
                 <button onClick={() => setActiveModal("data")}>
@@ -873,7 +866,7 @@ export default function LandingPage() {
                 {activeModal === "data" && (
                   <>
                     <FileText size={20} />
-                    <span>{t("footer.documentation", "Documentation")}</span>
+                    <span>{t("footer.about_agriai", "About AgriAI")}</span>
                   </>
                 )}
               </h3>
@@ -919,9 +912,9 @@ export default function LandingPage() {
               {activeModal === "terms" && (
                 <>
                   <p>
-                    By using AgriAI, agree to these Terms of Service
-                    designed to foster safe, informed, and responsible
-                    artificial intelligence usage in agriculture.
+                    By using AgriAI, agree to these Terms of Service designed to
+                    foster safe, informed, and responsible artificial
+                    intelligence usage in agriculture.
                   </p>
                   <h4>1. AI Advisory Scope</h4>
                   <p>

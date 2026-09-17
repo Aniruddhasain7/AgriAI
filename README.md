@@ -8,6 +8,14 @@
 
 ---
 
+<p align="center">
+  <a href="https://agri-ai-5.vercel.app/" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/badge/LIVE_DEMO-VISIT_AGRIAI-22C55E?style=for-the-badge&logo=vercel&logoColor=white&labelColor=000000" alt="Live Demo" height="38" />
+  </a>
+</p>
+
+---
+
 ## 🌟 Key Features
 
 | Icon | Feature                        | Description                                                                                                                                        | Engine / Model                                           |
@@ -22,6 +30,7 @@
 |  🌗  | **Adaptive Theme System**      | Glassmorphic UI with automatic Light & Dark mode support and responsive mobile drawer navigation.                                                  | Vanilla CSS3 Variables & Glassmorphism                   |
 
 > **🌿 Supported Disease Classes (15 Classes across Pepper, Potato & Tomato)**:
+>
 > - **Pepper (Bell)**: Bacterial Spot, Healthy
 > - **Potato**: Early Blight, Late Blight, Healthy
 > - **Tomato**: Bacterial Spot, Early Blight, Late Blight, Leaf Mold, Septoria Leaf Spot, Two-Spotted Spider Mites, Target Spot, Yellow Leaf Curl Virus, Mosaic Virus, Healthy
@@ -30,26 +39,26 @@
 
 ## 🛠️ Technology Stack
 
-| Domain                      | Technology              | Version              | Purpose                                                                                     |
-| :-------------------------- | :---------------------- | :------------------- | :------------------------------------------------------------------------------------------ |
-| **Frontend Core**           | React 19                | `v19.2.8`            | Declarative component UI library                                                            |
-| **Build System**            | Vite                    | `v8.2.0`             | Ultra-fast development server & bundler                                                     |
-| **Icons & UI**              | Lucide React            | `v1.31.0`            | Modern, lightweight icon library                                                            |
-| **Internationalization**    | i18next / react-i18next | `v23.14.0 / v15.0.1` | Multilingual support (EN, HI, BN)                                                           |
-| **Routing**                 | React Router DOM        | `v6.26.0`            | Client-side SPA routing                                                                     |
-| **Backend Core**            | Flask                   | `v3.0.3`             | Python micro-framework for RESTful API                                                      |
+| Domain                      | Technology              | Version              | Purpose                                                                                         |
+| :-------------------------- | :---------------------- | :------------------- | :---------------------------------------------------------------------------------------------- |
+| **Frontend Core**           | React 19                | `v19.2.8`            | Declarative component UI library                                                                |
+| **Build System**            | Vite                    | `v8.2.0`             | Ultra-fast development server & bundler                                                         |
+| **Icons & UI**              | Lucide React            | `v1.31.0`            | Modern, lightweight icon library                                                                |
+| **Internationalization**    | i18next / react-i18next | `v23.14.0 / v15.0.1` | Multilingual support (EN, HI, BN)                                                               |
+| **Routing**                 | React Router DOM        | `v6.26.0`            | Client-side SPA routing                                                                         |
+| **Backend Core**            | Flask                   | `v3.0.3`             | Python micro-framework for RESTful API                                                          |
 | **ML Inference**            | LiteRT (ai-edge-litert) | `>=2.0.0`            | Lightweight TensorFlow Lite inference engine for Custom Deep CNN disease model (~17 MB runtime) |
-| **Model Training & Export** | TensorFlow              | `v2.16+`             | Custom Deep CNN architecture on PlantVillage dataset & TFLite export                        |
-| **Machine Learning**        | Scikit-Learn            | `v1.6.1`             | Random Forest Crop Yield & Crop Recommender                                                 |
-| **Data Processing**         | NumPy & Pandas          | `v1.26.4 / v2.2.2`   | Dataset transformations & array calculations                                                |
-| **AI Assistant**            | Groq AI API             | `>=0.18.0`           | Multilingual agricultural LLM chatbot (`openai/gpt-oss-120b` / `openai/gpt-oss-20b`)        |
-| **Database ORM**            | Flask-SQLAlchemy        | `v3.1.1`             | Unified PostgreSQL ORM (Neon / Cloud / Docker)                                              |
-| **DB Driver**               | psycopg2-binary         | `v2.9.9`             | PostgreSQL Python connector                                                                 |
-| **Production Server**       | Gunicorn                | `v22.0.0`            | Python WSGI HTTP server                                                                     |
-| **Containerization**        | Docker                  | —                    | Python 3.11.9-slim locked runtime for cloud services                                        |
-| **Deployment (Backend)**    | Render                  | —                    | Free Docker web service (Flask API)                                                         |
-| **Deployment (Database)**   | Neon                    | —                    | Free Serverless PostgreSQL (500 MB)                                                          |
-| **Deployment (Frontend)**   | Vercel                  | —                    | Free static React SPA hosting                                                               |
+| **Model Training & Export** | TensorFlow              | `v2.16+`             | Custom Deep CNN architecture on PlantVillage dataset & TFLite export                            |
+| **Machine Learning**        | Scikit-Learn            | `v1.6.1`             | Random Forest Crop Yield & Crop Recommender                                                     |
+| **Data Processing**         | NumPy & Pandas          | `v1.26.4 / v2.2.2`   | Dataset transformations & array calculations                                                    |
+| **AI Assistant**            | Groq AI API             | `>=0.18.0`           | Multilingual agricultural LLM chatbot (`openai/gpt-oss-120b` / `openai/gpt-oss-20b`)            |
+| **Database ORM**            | Flask-SQLAlchemy        | `v3.1.1`             | Unified PostgreSQL ORM (Neon / Cloud / Docker)                                                  |
+| **DB Driver**               | psycopg2-binary         | `v2.9.9`             | PostgreSQL Python connector                                                                     |
+| **Production Server**       | Gunicorn                | `v22.0.0`            | Python WSGI HTTP server                                                                         |
+| **Containerization**        | Docker                  | —                    | Python 3.11.9-slim locked runtime for cloud services                                            |
+| **Deployment (Backend)**    | Render                  | —                    | Free Docker web service (Flask API)                                                             |
+| **Deployment (Database)**   | Neon                    | —                    | Free Serverless PostgreSQL (500 MB)                                                             |
+| **Deployment (Frontend)**   | Vercel                  | —                    | Free static React SPA hosting                                                                   |
 
 ---
 
@@ -219,11 +228,11 @@ Frontend starts at `http://localhost:5173`
 
 The application can be deployed using a **free-forever cloud stack**:
 
-| Service      | Platform                         | Notes                                                         |
-| ------------ | -------------------------------- | ------------------------------------------------------------- |
-| **Frontend** | [Vercel](https://vercel.com)     | Auto-deploys static SPA from `main` branch                    |
-| **Backend**  | [Render](https://render.com)     | Docker web service (spins down after inactivity on free tier) |
-| **Database** | [Neon](https://neon.tech)        | Free Serverless PostgreSQL (500 MB limit)                     |
+| Service      | Platform                     | Notes                                                         |
+| ------------ | ---------------------------- | ------------------------------------------------------------- |
+| **Frontend** | [Vercel](https://vercel.com) | Auto-deploys static SPA from `main` branch                    |
+| **Backend**  | [Render](https://render.com) | Docker web service (spins down after inactivity on free tier) |
+| **Database** | [Neon](https://neon.tech)    | Free Serverless PostgreSQL (500 MB limit)                     |
 
 ### Backend — Render (Docker)
 
@@ -253,7 +262,7 @@ The application can be deployed using a **free-forever cloud stack**:
 | Variable       | Location                       | Description                                      |
 | -------------- | ------------------------------ | ------------------------------------------------ |
 | `GROQ_API_KEY` | `backend/.env` + Render        | Groq API key for AI chatbot                      |
-| `DATABASE_URL` | `backend/.env` + Render        | Neon PostgreSQL connection pooler URI             |
+| `DATABASE_URL` | `backend/.env` + Render        | Neon PostgreSQL connection pooler URI            |
 | `VITE_API_URL` | `frontend/.env.local` + Vercel | Full URL of the backend API (no trailing `/api`) |
 
 ---

@@ -33,7 +33,8 @@ export default function Navbar() {
   const user = getStoredUser();
   const token = localStorage.getItem("agriai_token");
   const isAuthenticated = Boolean(user && token);
-  const isDashboard = location.pathname === "/dashboard" || location.pathname === "/";
+  const isLandingPage = location.pathname === "/";
+  const isDashboard = location.pathname === "/dashboard" || isLandingPage;
 
   const handleLogout = () => {
     localStorage.removeItem("agriai_token");
@@ -167,11 +168,7 @@ export default function Navbar() {
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
-          {isAuthenticated && (
-            <div className="desktop-only">
-              <LanguageSwitcher />
-            </div>
-          )}
+          <LanguageSwitcher />
           <ThemeToggle />
 
           <div className="desktop-only">
@@ -301,16 +298,14 @@ export default function Navbar() {
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "space-between",
+                  gap: "8px",
+                  fontWeight: 700,
                   paddingBottom: "12px",
                   borderBottom: "1px solid var(--border-color)",
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", fontWeight: 700 }}>
-                  <UserIcon size={16} style={{ color: "var(--primary-500)" }} />
-                  <span>{user?.name || t("nav.farmer", "Farmer")}</span>
-                </div>
-                <LanguageSwitcher />
+                <UserIcon size={16} style={{ color: "var(--primary-500)" }} />
+                <span>{user?.name || t("nav.farmer", "Farmer")}</span>
               </div>
 
               <Link

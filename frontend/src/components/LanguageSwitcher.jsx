@@ -8,7 +8,7 @@ const LANGUAGES = [
   { code: "bn", label: "Bengali", nativeName: "বাংলা" },
 ];
 
-export default function LanguageSwitcher() {
+export default function LanguageSwitcher({ direction = "down" }) {
   const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -23,7 +23,11 @@ export default function LanguageSwitcher() {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
   }, []);
 
   const handleSelect = (code) => {
@@ -40,14 +44,15 @@ export default function LanguageSwitcher() {
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         title="Select Language"
+        aria-label="Select Language"
       >
-        <Globe size={15} className="lang-globe-icon" />
+        <Globe size={18} className="lang-globe-icon" />
         <span className="lang-current-label">{currentLang.nativeName}</span>
         <ChevronDown size={14} className={`lang-chevron-icon ${isOpen ? "open" : ""}`} />
       </button>
 
       {isOpen && (
-        <div className="language-dropdown-menu" role="listbox">
+        <div className={`language-dropdown-menu ${direction === "up" ? "dropup" : ""}`} role="listbox">
           <div className="lang-dropdown-header">Language</div>
           {LANGUAGES.map((lang) => {
             const isSelected = lang.code === currentLang.code;
