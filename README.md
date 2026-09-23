@@ -8,43 +8,179 @@
 
 ---
 
-## 🌟 Key Features
+<p align="center">
+  <a href="https://agri-ai-5.vercel.app/" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/badge/LIVE_DEMO-VISIT_AGRIAI-22C55E?style=for-the-badge&logo=vercel&logoColor=white&labelColor=000000" alt="Live Demo" height="38" />
+  </a>
+</p>
 
-| Icon | Feature                        | Description                                                                                                                                        | Engine / Model                                           |
-| :--: | :----------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------- |
-|  🍃  | **AI Leaf Disease Detection**  | Upload or scan crop leaf photos using the **Live WebCam Camera Scanner** to detect plant diseases instantly with actionable treatment plans.       | TensorFlow Lite (LiteRT) Custom Deep CNN                 |
-|  🌾  | **Crop Yield Prediction**      | Predict harvest output in tonnes per hectare based on harvest area, rainfall, temperature, and crop type.                                          | Scikit-Learn Random Forest Regressor (FAO Dataset)       |
-|  🌱  | **AI Crop Recommendation**     | Recommend optimal crops based on soil N-P-K levels, pH, ambient temperature, humidity, and rainfall.                                               | Scikit-Learn Random Forest Classifier                    |
-|  🧪  | **Soil Nutrient Balancer**     | Calculate optimal N-P-K & pH fertilizer ratios and soil acidity amendments for selected crops.                                                     | Rule-based Soil Chemistry Balancer                       |
-|  ☀️  | **Real-Time Weather Advisory** | Live meteorological forecasts with 3-day customized farming recommendations tailored to your location.                                             | Live Weather API Integration                             |
-|  📈  | **Mandi Market Intelligence**  | Real-time APMC mandi spot rates, modal prices, 7-day trend series, technical indicators (SMA-7, RSI-7), MSP benchmarks, and 3-day price forecasts. | Holt-Winters Double Exponential Smoothing & APMC Tracker |
-|  💬  | **Multilingual AI Assistant**  | Instant 24/7 agricultural consultation in **English**, **Hindi (हिंदी)**, and **Bengali (বাংলা)**.                                                 | Groq AI Multilingual LLM (OpenAI GPT-OSS 120B / 20B)     |
-|  🌗  | **Adaptive Theme System**      | Glassmorphic UI with automatic Light & Dark mode support and responsive mobile drawer navigation.                                                  | Vanilla CSS3 Variables & Glassmorphism                   |
+---
+
+## 🌟 Core Features
+
+### 1. 🍃 AI Leaf Disease Detection (TensorFlow Lite / LiteRT CNN)
+The **AI Leaf Disease Scanner** enables farmers to identify plant pathologies in seconds using just a smartphone or webcam photograph, minimizing crop loss through early intervention.
+
+- **Dual Capture Modes**:
+  - **Live WebCam / Camera Scanner**: Real-time camera streaming with environment-facing camera support on mobile devices. Capture a snapshot directly in the field with a single click.
+  - **Drag-and-Drop Image Upload**: Supports high-resolution images (`PNG`, `JPG`, `JPEG`, `WEBP`) with automatic client-side validation and file preview.
+- **Deep Learning Model (LiteRT)**:
+  - Powered by a custom **Convolutional Neural Network (CNN)** trained on the **PlantVillage dataset** (~20,000 annotated leaf images).
+  - Exported to **TensorFlow Lite (`.tflite`) format** executed via Google’s **LiteRT runtime (`ai-edge-litert`)**, providing low-latency inference (~1.2 seconds) with a compact memory footprint (~17 MB).
+- **Supported Crops & 15 Pathology Classes**:
+  - **Pepper (Bell)**: Bacterial Spot, Healthy
+  - **Potato**: Early Blight (*Alternaria solani*), Late Blight (*Phytophthora infestans*), Healthy
+  - **Tomato**: Bacterial Spot, Early Blight, Late Blight, Leaf Mold, Septoria Leaf Spot, Two-Spotted Spider Mites, Target Spot, Yellow Leaf Curl Virus, Mosaic Virus, Healthy
+- **Diagnostic Output & Remediation**:
+  - **Primary Diagnosis & Confidence Score**: Displayed as a percentage score (e.g., 98.4%).
+  - **Top-3 Alternate Diagnoses**: Visual probability distribution across the top 3 candidate classes for diagnostic transparency.
+  - **Actionable Treatment Plans**: Formulates both **organic remedies** (neem oil sprays, copper fungicides, pruning, crop rotation) and **chemical controls** with safe application guidelines.
+  - **Historical Audit Trail**: Every diagnosis is automatically logged in the PostgreSQL database with expandable remediation cards for future review.
+
+---
+
+### 2. 🌾 Crop Harvest Yield Prediction (FAO Random Forest Regressor)
+The **Harvest Yield Predictor** helps farm managers, agricultural banks, and policymakers forecast expected seasonal harvest yields per hectare before harvesting begins.
+
+- **Agronomic Factors Analyzed**:
+  - **Target Country & Crop**: Tailored to regional microclimates and major staple crops (Maize, Potatoes, Rice, Sorghum, Soybeans, Wheat, Cassava, Sweet Potatoes, Yams).
+  - **Average Annual Precipitation**: Rainfall volume in millimeters per year (`mm/year`).
+  - **Average Growing Season Temperature**: Temperature in degrees Celsius (`°C`).
+  - **Pesticide Applications**: Chemical plant protection inputs in metric tonnes.
+- **Machine Learning Architecture**:
+  - Trained on multi-decade historical agricultural datasets compiled by the **United Nations Food and Agriculture Organization (FAO)**.
+  - Implements a **Scikit-Learn Random Forest Regressor** ensemble capable of modeling non-linear climate interactions, weather anomalies, and chemical input responses.
+- **Output & Actionable Insights**:
+  - **Predicted Yield**: Projected harvest output expressed in **metric tonnes per hectare (t/ha)** and total calculated field yield.
+  - **Benchmarking**: Compares predicted yield against historical national averages, indicating whether current practices are on track for high, standard, or deficit production.
+
+---
+
+### 3. 🌱 AI Crop Recommendation (Random Forest Classifier)
+The **Crop Recommendation Engine** helps growers select the most profitable and high-yielding crops suited to their farm's specific soil chemistry and ambient environmental conditions.
+
+- **Multi-Variate Input Features**:
+  - **Soil Macro-Nutrients**: Nitrogen (**N**), Phosphorus (**P**), and Potassium (**K**) levels in milligrams per kilogram (`mg/kg` or `ppm`).
+  - **Soil Acidity/Alkalinity**: Soil pH measured on a standard logarithmic scale (0–14).
+  - **Climate Variables**: Ambient temperature (`°C`), relative humidity (`%`), and average rainfall (`mm`).
+- **Machine Learning Architecture**:
+  - Powered by a **Scikit-Learn Random Forest Classifier** trained on extensive multi-regional agricultural soil-crop adaptation datasets.
+- **Output & Ranked Suitability**:
+  - **Top Recommendation**: Identifies the primary optimal crop variety with maximum probability.
+  - **Top-3 Ranked Alternatives**: Classifies crops into **Best Match**, **Strong Alternative**, and **Viable Alternative** with percentage compatibility scores.
+  - Supports diversification planning and multi-season crop rotation strategies.
+
+---
+
+### 4. 🧪 Soil Chemistry & N-P-K Nutrient Balancer (Rule-Based Soil Science)
+The **Soil Nutrient Balancer** bridges the gap between raw laboratory soil test reports and practical field fertilization schedules, preventing both soil depletion and expensive over-fertilization.
+
+- **Crop-Specific Target Profiling**:
+  - Compares the farmer's current soil test results against the scientifically recommended baseline requirements for the intended crop (cereals, legumes, cash crops, vegetables).
+- **Fertilizer Dosage Calculations**:
+  - **Macro-Nutrient Deficit Assessment**: Evaluates exact deficits or surpluses of Nitrogen (N), Phosphorus (P), and Potassium (K).
+  - **Commercial Fertilizer Dosages**: Converts raw chemical deficits into precise quantities of widely available commercial fertilizers:
+    - **Urea** (46% N) in kg/acre
+    - **DAP (Diammonium Phosphate)** / **SSP (Single Superphosphate)** for Phosphorus in kg/acre
+    - **MOP (Muriate of Potash)** for Potassium in kg/acre
+  - **Organic Recommendations**: Organic manure, vermicompost, and green manuring alternatives for organic farmers.
+- **Soil pH Remediation**:
+  - **Acidic Soils (pH < 6.0)**: Recommends agricultural lime (calcium carbonate) or dolomite application to raise pH and reduce aluminum toxicity.
+  - **Alkaline Soils (pH > 7.5)**: Recommends elemental sulfur or agricultural gypsum to neutralize sodic soils and unlock micronutrient availability.
+
+---
+
+### 5. ☀️ Real-Time Agro-Meteorology Radar & Spraying Advisory
+The **Weather Advisory Module** provides micro-climate field radar and localized agronomic weather advisories to safeguard crops against rain wash-off, frost, and high-wind spray drift.
+
+- **Precision Location Detection**:
+  - **One-Click Live GPS**: Automatically queries browser geolocation coordinates and resolves nearest agricultural districts via reverse geocoding.
+  - **Universal Search**: Real-time autocomplete search for cities, districts, and villages across the globe.
+- **Real-Time Telemetry Metrics**:
+  - Current temperature, apparent feels-like temperature, relative humidity, wind speed, wind direction, atmospheric pressure, and weather status icons.
+- **3-Day Agronomic Forecast**:
+  - Day-by-day maximum & minimum temperatures, anticipated precipitation volume in millimeters (`mm`), and rain probability.
+- **Smart Spraying Window Indicator**:
+  - Automatically assesses real-time wind speed, humidity, and 24-hour precipitation forecasts to categorize pesticide/fertilizer spraying windows:
+    - 🟢 **Optimal**: Wind speed < 12 km/h, humidity 50%–70%, zero imminent rain.
+    - 🟡 **Marginal**: Cautionary conditions with moderate wind or high humidity.
+    - 🔴 **Unfavorable**: Risk of pesticide wash-off due to expected rain, or excessive wind causing spray drift onto neighboring crops.
+
+---
+
+### 6. 📈 Mandi Market Prices & 7-Day Trend Analytics
+The **Mandi Market Prices** tool empowers farmers to negotiate better rates, avoid distress selling, and track spot prices across agricultural produce market committees (APMC mandis) throughout India.
+
+- **Tracked Commodities**:
+  - Rice (Paddy), Wheat, Maize, Cotton, Sugarcane, Soybean, Mustard Seed, Gram (Chana), Groundnut, Potato, Onion, and Tomato.
+- **Live Rates & Baseline Tracking**:
+  - Integrates **TGK Agro live mandi open feeds** for commodities with active digital exchanges, backed by official daily APMC reference rates.
+- **7-Day Price Trend Graph**:
+  - Visual, mobile-optimized bar chart tracking price movements over the last 7 calendar days.
+  - Highlights today's price with an emerald glow indicator.
+  - Displays **7-Day High**, **7-Day Low**, and **7-Day Average** price summary cards.
+- **Govt. Minimum Support Price (MSP) Comparison**:
+  - Benchmarks live market rates against official **Govt. of India 2024-25 MSP rates**.
+  - Automatically calculates whether the prevailing price is at a profit premium (`+₹ above MSP`) or deficit (`-₹ below MSP`), advising farmers when to leverage government procurement centers.
+- **Regional APMC Mandi Breakdown**:
+  - Compares spot prices across primary producing states and mandis (e.g., Lasalgaon for Onions, Rajkot for Cotton, Karnal for Rice, Indore for Soybeans).
+  - Displays daily arrival volumes in metric tonnes (`T`) and price differences relative to national benchmarks.
+- **AI Farmer Advisory**:
+  - Plain-language advisory synthesized in **English**, **Hindi**, or **Bengali** analyzing whether current conditions favor selling now or holding stock.
+  - Interactive **Ask AI About This Price** tool allows farmers to ask custom questions (e.g., *"Which mandi is offering the best price?"*, *"Will prices increase next week?"*).
+
+---
+
+### 7. 💬 Multilingual AI Agronomist Consultation (Groq LLM)
+The **AI Agronomist Chatbot** provides round-the-clock conversational assistance for complex agronomic queries that go beyond structured forms.
+
+- **High-Throughput Inference**:
+  - Powered by **Groq AI cloud inference** running open-weights large language models (`openai/gpt-oss-120b` and `openai/gpt-oss-20b`), delivering near-instant responses (< 1.5 seconds).
+- **Trilingual Native Support**:
+  - Fully capable of comprehending and responding in **English**, **Hindi (हिंदी)**, and **Bengali (বাংলা)**.
+- **Rich Agronomic Formatting**:
+  - Formats advice with clear headings, organized dosage tables, bulleted action items, and safety precautions for agrochemical handling.
+- **Suggested Topic Prompts**:
+  - Quick-start chips for pest identification, drip irrigation timing, organic compost preparation, companion planting, and government subsidy schemes.
+
+---
+
+### 8. 🛡️ User Authentication, History & Adaptive Interface
+- **Secure Authentication**:
+  - Cryptographically secure **PBKDF2 password hashing with salt** and token-based session management (`/api/auth/register`, `/api/auth/login`).
+  - Protected client-side routes ensure sensitive farm data and prediction logs remain private.
+- **Personalized Farmer Command Center**:
+  - Dynamic dashboard displaying live system status, model accuracy metrics, active modules, and personalized quick-launch buttons.
+- **Comprehensive History Logs**:
+  - Stores past leaf disease diagnoses and prediction logs in the PostgreSQL database with expandable detail modals and timestamp tracking.
+- **Mobile-First Glassmorphic Design**:
+  - Built with pure modern Vanilla CSS3, backdrop blur filters, smooth micro-animations, and full responsiveness across smartphones, tablets, and desktops.
+  - Seamless **Light & Dark mode** switching with zero-flicker theme persistence via `localStorage`.
 
 ---
 
 ## 🛠️ Technology Stack
 
-| Domain                      | Technology              | Version              | Purpose                                                                                     |
-| :-------------------------- | :---------------------- | :------------------- | :------------------------------------------------------------------------------------------ |
-| **Frontend Core**           | React 19                | `v19.2.8`            | Declarative component UI library                                                            |
-| **Build System**            | Vite                    | `v8.2.0`             | Ultra-fast development server & bundler                                                     |
-| **Icons & UI**              | Lucide React            | `v1.31.0`            | Modern, lightweight icon library                                                            |
-| **Internationalization**    | i18next / react-i18next | `v23.14.0 / v15.0.1` | Multilingual support (EN, HI, BN)                                                           |
-| **Routing**                 | React Router DOM        | `v6.26.0`            | Client-side SPA routing                                                                     |
-| **Backend Core**            | Flask                   | `v3.0.3`             | Python micro-framework for RESTful API                                                      |
+| Domain                      | Technology              | Version              | Purpose                                                                                         |
+| :-------------------------- | :---------------------- | :------------------- | :---------------------------------------------------------------------------------------------- |
+| **Frontend Core**           | React 19                | `v19.2.8`            | Declarative component UI library                                                                |
+| **Build System**            | Vite                    | `v8.2.0`             | Ultra-fast development server & bundler                                                         |
+| **Icons & UI**              | Lucide React            | `v1.31.0`            | Modern, lightweight icon library                                                                |
+| **Internationalization**    | i18next / react-i18next | `v23.14.0 / v15.0.1` | Multilingual support (EN, HI, BN)                                                               |
+| **Routing**                 | React Router DOM        | `v6.26.0`            | Client-side SPA routing                                                                         |
+| **Backend Core**            | Flask                   | `v3.0.3`             | Python micro-framework for RESTful API                                                          |
 | **ML Inference**            | LiteRT (ai-edge-litert) | `>=2.0.0`            | Lightweight TensorFlow Lite inference engine for Custom Deep CNN disease model (~17 MB runtime) |
-| **Model Training & Export** | TensorFlow              | `v2.16+`             | Custom Deep CNN architecture on PlantVillage dataset & TFLite export                        |
-| **Machine Learning**        | Scikit-Learn            | `v1.6.1`             | Random Forest Crop Yield & Crop Recommender                                                 |
-| **Data Processing**         | NumPy & Pandas          | `v1.26.4 / v2.2.2`   | Dataset transformations & array calculations                                                |
-| **AI Assistant**            | Groq AI API             | `>=0.18.0`           | Multilingual agricultural LLM chatbot (`openai/gpt-oss-120b` / `openai/gpt-oss-20b`)        |
-| **Database ORM**            | Flask-SQLAlchemy        | `v3.1.1`             | Unified PostgreSQL ORM (Supabase / Cloud / Docker)                                          |
-| **DB Driver**               | psycopg2-binary         | `v2.9.9`             | PostgreSQL Python connector                                                                 |
-| **Production Server**       | Gunicorn                | `v22.0.0`            | Python WSGI HTTP server                                                                     |
-| **Containerization**        | Docker                  | —                    | Python 3.11.9-slim locked runtime for cloud services                                        |
-| **Deployment (Backend)**    | Render                  | —                    | Free Docker web service (Flask API)                                                         |
-| **Deployment (Database)**   | Supabase                | —                    | Free managed PostgreSQL (500 MB)                                                            |
-| **Deployment (Frontend)**   | Vercel                  | —                    | Free static React SPA hosting                                                               |
+| **Model Training & Export** | TensorFlow              | `v2.16+`             | Custom Deep CNN architecture on PlantVillage dataset & TFLite export                            |
+| **Machine Learning**        | Scikit-Learn            | `v1.6.1`             | Random Forest Crop Yield & Crop Recommender                                                     |
+| **Data Processing**         | NumPy & Pandas          | `v1.26.4 / v2.2.2`   | Dataset transformations & array calculations                                                    |
+| **AI Assistant**            | Groq AI API             | `>=0.18.0`           | Multilingual agricultural LLM chatbot (`openai/gpt-oss-120b` / `openai/gpt-oss-20b`)            |
+| **Database ORM**            | Flask-SQLAlchemy        | `v3.1.1`             | Unified PostgreSQL ORM (Neon / Cloud / Docker)                                                  |
+| **DB Driver**               | psycopg2-binary         | `v2.9.9`             | PostgreSQL Python connector                                                                     |
+| **Production Server**       | Gunicorn                | `v22.0.0`            | Python WSGI HTTP server                                                                         |
+| **Containerization**        | Docker                  | —                    | Python 3.11.9-slim locked runtime for cloud services                                            |
+| **Deployment (Backend)**    | Render                  | —                    | Free Docker web service (Flask API)                                                             |
+| **Deployment (Database)**   | Neon                    | —                    | Free Serverless PostgreSQL (500 MB)                                                             |
+| **Deployment (Frontend)**   | Vercel                  | —                    | Free static React SPA hosting                                                                   |
 
 ---
 
@@ -89,9 +225,9 @@ graph TB
         Flask --> ExternalAPIs
     end
 
-    subgraph Tier3["Tier 3: Data Tier (Persistence & Model Storage - Supabase)"]
+    subgraph Tier3["Tier 3: Data Tier (Persistence & Model Storage - Neon)"]
         direction TB
-        DB[("PostgreSQL Database (Supabase Cloud)")]
+        DB[("PostgreSQL Database (Neon Cloud)")]
         Models[("Serialized Model Artifacts (.tflite & .joblib)")]
     end
 
@@ -107,8 +243,8 @@ graph TB
 |    Tier    | Layer                                               | Deployment Environment                | Key Technologies                                           | Core Responsibilities                                                                                                                                                                                                                                                                                                            |
 | :--------: | :-------------------------------------------------- | :------------------------------------ | :--------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Tier 1** | **Presentation Tier** _(Client Layer)_              | Vercel Static Cloud                   | React 19, Vite, Vanilla CSS3 Glassmorphism, i18next        | • Renders responsive single-page user interfaces.<br>• Handles live camera access and crop leaf image pre-processing.<br>• Manages client-side routing, state, and multi-language switching (EN/HI/BN).<br>• Formats and dispatches HTTPS REST requests to backend API.                                                          |
-| **Tier 2** | **Application Tier** _(Business & AI Logic Layer)_  | Render Web Service (Docker Container) | Flask 3, Gunicorn, LiteRT, Scikit-Learn, Groq              | • Hosts REST API endpoints, routing, CORS, and request verification.<br>• Manages PBKDF2 password hashing and secure token sessions.<br>• Executes fast, local ML model inference (TFLite CNN leaf scanning, Random Forest crop/yield ML).<br>• Connects to Groq LLM for AI consultation and fetches live weather & market APIs. |
-| **Tier 3** | **Data Tier** _(Persistence & Model Storage Layer)_ | Supabase Managed PostgreSQL Cloud     | PostgreSQL RDBMS, Flask-SQLAlchemy ORM, Local Disk Storage | • Stores relational database tables (`users`, `disease_history`, `prediction_history`).<br>• Maintains database connection pooling (Session mode) for reliable transactions.<br>• Stores version-locked pre-trained ML weights (`.tflite`, `.joblib`) and label mappings.                                                        |
+| **Tier 2** | **Application Tier** _(Business & AI Logic Layer)_  | Render Web Service (Docker Container) | Flask 3, Gunicorn, LiteRT, Scikit-Learn, Groq              | • Hosts REST API endpoints, routing, CORS, and request verification.<br>• Manages PBKDF2 password hashing and secure token sessions.<br>• Executes fast, local ML model inference (TFLite CNN leaf scanning, Random Forest crop/yield ML).<br>• Connects to Groq LLM for AI consultation, fetches live weather & mandi market price feeds, and generates plain-language farmer advisories. |
+| **Tier 3** | **Data Tier** _(Persistence & Model Storage Layer)_ | Neon Serverless PostgreSQL Cloud      | PostgreSQL RDBMS, Flask-SQLAlchemy ORM, Local Disk Storage | • Stores relational database tables (`users`, `disease_history`, `prediction_history`).<br>• Maintains database connection pooling (Session mode) for reliable transactions.<br>• Stores version-locked pre-trained ML weights (`.tflite`, `.joblib`) and label mappings.                                                        |
 
 ---
 
@@ -122,10 +258,10 @@ Agri-ai/
 │   ├── models_db.py          # SQLAlchemy Models (User, PredictionHistory)
 │   ├── requirements.txt      # Python Dependencies (LiteRT, Flask, Gunicorn, psycopg2)
 │   ├── models/
-│   │   ├── disease_model.tflite  # Custom Deep CNN disease detection model (TFLite format, ~6.4 MB)
+│   │   ├── disease_model.tflite  # Custom Deep CNN disease detection model (TFLite format)
 │   │   ├── crop_model.joblib     # Scikit-Learn Random Forest crop recommender
 │   │   ├── yield_model.joblib    # Scikit-Learn Random Forest yield predictor
-│   │   └── class_indices.json   # Disease class label mapping (38 plant/disease classes)
+│   │   └── class_indices.json   # Disease class label mapping (15 plant/disease classes: Pepper, Potato, Tomato)
 │   ├── routes/
 │   │   ├── auth.py           # User Authentication Routes & Profile Context
 │   │   ├── disease.py        # TFLite Image Scanner & Leaf Disease API
@@ -136,7 +272,7 @@ Agri-ai/
 │   │   ├── market.py         # Mandi Commodity Market Price Trends API
 │   │   └── chatbot.py        # Multilingual Farmer Assistant (GPT-OSS LLM) API
 │   └── ml_training/          # ML Model Training Notebooks
-│       ├── disease_detection.ipynb  # TensorFlow Custom Deep CNN trainer & TFLite exporter
+│       ├── disease_detection.ipynb  # Clean 6-step Custom CNN trainer & TFLite exporter (15 classes, 10 epochs)
 │       ├── crop_recommendation.ipynb # Scikit-Learn Crop Recommender trainer
 │       └── yield_prediction.ipynb   # Scikit-Learn FAO Yield Predictor trainer
 ├── frontend/
@@ -214,25 +350,25 @@ Frontend starts at `http://localhost:5173`
 
 The application can be deployed using a **free-forever cloud stack**:
 
-| Service      | Platform                         | Notes                                                         |
-| ------------ | -------------------------------- | ------------------------------------------------------------- |
-| **Frontend** | [Vercel](https://vercel.com)     | Auto-deploys static SPA from `main` branch                    |
-| **Backend**  | [Render](https://render.com)     | Docker web service (spins down after inactivity on free tier) |
-| **Database** | [Supabase](https://supabase.com) | Free managed PostgreSQL (500 MB limit)                        |
+| Service      | Platform                     | Notes                                                         |
+| ------------ | ---------------------------- | ------------------------------------------------------------- |
+| **Frontend** | [Vercel](https://vercel.com) | Auto-deploys static SPA from `main` branch                    |
+| **Backend**  | [Render](https://render.com) | Docker web service (spins down after inactivity on free tier) |
+| **Database** | [Neon](https://neon.tech)    | Free Serverless PostgreSQL (500 MB limit)                     |
 
 ### Backend — Render (Docker)
 
 1. Create a **Web Service** on Render.
 2. Connect your GitHub repo → set **Root Directory**: `backend`, **Runtime**: `Docker`.
 3. Add environment variables:
-   - `DATABASE_URL` → Supabase connection pooler URI (Session mode, port 6543).
+   - `DATABASE_URL` → Neon connection pooler URI.
    - `GROQ_API_KEY` → Your Groq API key (from console.groq.com).
 
-### Database — Supabase
+### Database — Neon
 
-1. Create a free project at [supabase.com](https://supabase.com).
-2. Go to **Settings → Database → Connection pooling → Session mode**.
-3. Copy the URI and set it as `DATABASE_URL` in Render.
+1. Create a free project at [neon.tech](https://neon.tech).
+2. Enable connection pooling in the project dashboard.
+3. Copy the pooled URI and set it as `DATABASE_URL` in `backend/.env` (and Render for deployment).
 
 ### Frontend — Vercel
 
@@ -248,7 +384,7 @@ The application can be deployed using a **free-forever cloud stack**:
 | Variable       | Location                       | Description                                      |
 | -------------- | ------------------------------ | ------------------------------------------------ |
 | `GROQ_API_KEY` | `backend/.env` + Render        | Groq API key for AI chatbot                      |
-| `DATABASE_URL` | `backend/.env` + Render        | Supabase PostgreSQL connection pooler URI        |
+| `DATABASE_URL` | `backend/.env` + Render        | Neon PostgreSQL connection pooler URI            |
 | `VITE_API_URL` | `frontend/.env.local` + Vercel | Full URL of the backend API (no trailing `/api`) |
 
 ---
@@ -267,7 +403,8 @@ The application can be deployed using a **free-forever cloud stack**:
 | `POST` | `/api/yield/predict`       | Crop harvest yield prediction (tonnes/hectare)           |
 | `POST` | `/api/soil/recommend`      | Calculate optimal N-P-K fertilizer balancing ratios      |
 | `GET`  | `/api/weather/advice`      | Live weather forecast & 3-day farming advisory           |
-| `GET`  | `/api/market/commodities`  | List supported agricultural commodities with MSP data    |
-| `GET`  | `/api/market/trend`        | Mandi spot prices, technical indicators & 3-day forecast |
+| `GET`  | `/api/market/commodities`  | List supported agricultural commodities with MSP data            |
+| `GET`  | `/api/market/trend`        | Live mandi spot prices, 7-day trend, MSP comparison & Groq LLM farmer advisory |
+| `POST` | `/api/market/ask`          | Ask a contextual market question via Groq LLM (crop, question, lang) |
 | `POST` | `/api/chatbot/message`     | Multilingual AI farming assistant (Groq LLM)             |
 | `GET`  | `/api/predictions/history` | Query user prediction logs filtered by tool type         |

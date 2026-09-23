@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import {
   User,
   Mail,
@@ -48,9 +48,7 @@ export default function SignupPage() {
       localStorage.setItem("agriai_token", data.token);
       localStorage.setItem("agriai_user", JSON.stringify(data.user));
 
-      setTimeout(() => {
-        navigate("/dashboard", { replace: true });
-      }, 300);
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       setLoading(false);
       setError(err.message || "Failed to create account. Please try again.");
@@ -58,14 +56,7 @@ export default function SignupPage() {
   };
 
   if (isAlreadyAuth) {
-    return (
-      <LoadingPage
-        title="AgriAI"
-        message="You are already logged in. Loading your dashboard..."
-        redirectTo="/dashboard"
-        duration={500}
-      />
-    );
+    return <Navigate to="/dashboard" replace />;
   }
 
   if (loading) {

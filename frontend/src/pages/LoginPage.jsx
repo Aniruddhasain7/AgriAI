@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import { Mail, Lock, LogIn, ArrowRight, ShieldCheck, AlertTriangle, Eye, EyeOff } from "lucide-react";
 import { api } from "../api/client";
 import heroImg from "../assets/hero.jpg";
@@ -33,9 +33,7 @@ export default function LoginPage() {
       localStorage.setItem("agriai_token", data.token);
       localStorage.setItem("agriai_user", JSON.stringify(data.user));
 
-      setTimeout(() => {
-        navigate("/dashboard", { replace: true });
-      }, 300);
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       setLoading(false);
       setError(err.message || "Failed to log in. Please check your credentials.");
@@ -43,14 +41,7 @@ export default function LoginPage() {
   };
 
   if (isAlreadyAuth) {
-    return (
-      <LoadingPage
-        title="AgriAI"
-        message="You are already logged in. Loading your dashboard..."
-        redirectTo="/dashboard"
-        duration={500}
-      />
-    );
+    return <Navigate to="/dashboard" replace />;
   }
 
   if (loading) {

@@ -278,7 +278,14 @@ export const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     }),
-  getMarketTrend: (crop) => request(`/market/trend?crop=${crop}`),
+  getMarketTrend: (crop, lang = "English") =>
+    request(`/market/trend?crop=${crop}&lang=${encodeURIComponent(lang)}`),
+  askMarketQuestion: (crop, question, lang = "English") =>
+    request("/market/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ crop, question, lang }),
+    }),
   recommendCrop: (payload) =>
     request("/crop/recommend", {
       method: "POST",
