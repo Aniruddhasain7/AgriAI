@@ -86,10 +86,10 @@ const TOOLS_CONFIG = [
     key: "market",
     category: "market-weather",
     icon: LineChart,
-    defaultBadge: "Market Analytics",
-    defaultTags: ["7-Day Trends", "Mandi Prices", "Next-Day Forecast"],
+    defaultBadge: "Price Predictor",
+    defaultTags: ["Multi-Day Forecast", "Peak Price Alert", "AI Selling Advice"],
     defaultDesc:
-      "Monitor live commodity price curves across mandis and anticipate market movements.",
+      "Forecast multi-day crop prices across APMC mandis with AI-guided selling windows and peak profit recommendations.",
   },
 ];
 

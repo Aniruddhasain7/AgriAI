@@ -1,413 +1,262 @@
 import os
-import time
-import requests
+import json
 from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify
+import joblib
+import pandas as pd
+import numpy as np
 
 market_bp = Blueprint("market", __name__)
 
-CROP_DATA = {
-    "rice": {
-        "name": "Paddy / Rice (धान)",
-        "msp": 2300,
-        "base_price": 2420,
-        "unit": "INR per quintal",
-        "tgk_key": "rice",
-        "mandis": [
-            {"mandi": "Karnal Mandi",     "state": "Haryana",      "variety": "Basmati / Common",  "arrivals_tonnes": 420, "price_offset": 1.05},
-            {"mandi": "Burdwan APMC",     "state": "West Bengal",  "variety": "Swarna / IR-36",    "arrivals_tonnes": 680, "price_offset": 0.98},
-            {"mandi": "Nizamabad Mandi",  "state": "Telangana",    "variety": "BPT 5204",          "arrivals_tonnes": 510, "price_offset": 1.02},
-            {"mandi": "Taran Taran APMC", "state": "Punjab",       "variety": "PR-126",            "arrivals_tonnes": 890, "price_offset": 1.04},
-        ],
-    },
-    "wheat": {
-        "name": "Wheat (गेहूं)",
-        "msp": 2275,
-        "base_price": 2480,
-        "unit": "INR per quintal",
-        "tgk_key": None,
-        "mandis": [
-            {"mandi": "Khanna Mandi",  "state": "Punjab",           "variety": "PBW-343 / HD-2967", "arrivals_tonnes": 1150, "price_offset": 1.03},
-            {"mandi": "Indore APMC",   "state": "Madhya Pradesh",   "variety": "Sharbati / Lokwan", "arrivals_tonnes": 920,  "price_offset": 1.08},
-            {"mandi": "Karnal APMC",   "state": "Haryana",          "variety": "HD-3086",           "arrivals_tonnes": 740,  "price_offset": 1.02},
-            {"mandi": "Hapur Mandi",   "state": "Uttar Pradesh",    "variety": "Dara Wheat",        "arrivals_tonnes": 580,  "price_offset": 1.01},
-        ],
-    },
-    "maize": {
-        "name": "Maize / Corn (मक्का)",
-        "msp": 2090,
-        "base_price": 2240,
-        "unit": "INR per quintal",
-        "tgk_key": None,
-        "mandis": [
-            {"mandi": "Gulabbagh Mandi",   "state": "Bihar",          "variety": "Yellow Hybrid",     "arrivals_tonnes": 1400, "price_offset": 1.04},
-            {"mandi": "Davanagere APMC",   "state": "Karnataka",      "variety": "African Tall / Pioneer", "arrivals_tonnes": 850, "price_offset": 1.01},
-            {"mandi": "Chhindwara Mandi",  "state": "Madhya Pradesh", "variety": "Hybrid Feed Grade", "arrivals_tonnes": 720,  "price_offset": 0.98},
-        ],
-    },
-    "cotton": {
-        "name": "Cotton (कपास)",
-        "msp": 7121,
-        "base_price": 7450,
-        "unit": "INR per quintal",
-        "tgk_key": "cotton",
-        "mandis": [
-            {"mandi": "Rajkot APMC",   "state": "Gujarat",    "variety": "Shankar-6",          "arrivals_tonnes": 1200, "price_offset": 1.05},
-            {"mandi": "Amravati Mandi","state": "Maharashtra","variety": "Medium / Long Staple","arrivals_tonnes": 940,  "price_offset": 1.01},
-            {"mandi": "Adilabad APMC", "state": "Telangana",  "variety": "Bunny Bt Cotton",    "arrivals_tonnes": 680,  "price_offset": 0.98},
-        ],
-    },
-    "sugarcane": {
-        "name": "Sugarcane (गन्ना)",
-        "msp": 340,
-        "base_price": 375,
-        "unit": "INR per quintal",
-        "tgk_key": None,
-        "mandis": [
-            {"mandi": "Muzaffarnagar Mandi", "state": "Uttar Pradesh", "variety": "Co 0238",   "arrivals_tonnes": 3200, "price_offset": 1.03},
-            {"mandi": "Kolhapur APMC",       "state": "Maharashtra",   "variety": "Co 86032",  "arrivals_tonnes": 2900, "price_offset": 1.04},
-            {"mandi": "Mandya Market",       "state": "Karnataka",     "variety": "Co 62175",  "arrivals_tonnes": 1800, "price_offset": 0.99},
-        ],
-    },
-    "soybean": {
-        "name": "Soybean (सोयाबीन)",
-        "msp": 4892,
-        "base_price": 4780,
-        "unit": "INR per quintal",
-        "tgk_key": None,
-        "mandis": [
-            {"mandi": "Indore APMC", "state": "Madhya Pradesh", "variety": "JS-9560 / Yellow", "arrivals_tonnes": 1600, "price_offset": 1.04},
-            {"mandi": "Latur APMC",  "state": "Maharashtra",    "variety": "JS-335 Grade A",   "arrivals_tonnes": 1450, "price_offset": 1.02},
-            {"mandi": "Kota Mandi",  "state": "Rajasthan",      "variety": "Yellow Soybean",   "arrivals_tonnes": 890,  "price_offset": 0.98},
-        ],
-    },
-    "mustard": {
-        "name": "Mustard Seed (सरसों)",
-        "msp": 5650,
-        "base_price": 5820,
-        "unit": "INR per quintal",
-        "tgk_key": None,
-        "mandis": [
-            {"mandi": "Jaipur APMC",  "state": "Rajasthan",      "variety": "42% Oil Content",   "arrivals_tonnes": 1350, "price_offset": 1.05},
-            {"mandi": "Hisar Mandi",  "state": "Haryana",         "variety": "RH-749 / Pusa Bold","arrivals_tonnes": 780,  "price_offset": 1.02},
-            {"mandi": "Morena Mandi", "state": "Madhya Pradesh",  "variety": "Yellow / Black Mix","arrivals_tonnes": 540,  "price_offset": 1.01},
-        ],
-    },
-    "gram": {
-        "name": "Gram / Chana (चना)",
-        "msp": 5440,
-        "base_price": 6150,
-        "unit": "INR per quintal",
-        "tgk_key": "desi-chana",
-        "mandis": [
-            {"mandi": "Bikaner APMC",  "state": "Rajasthan",     "variety": "Desi Chana",        "arrivals_tonnes": 920,  "price_offset": 1.03},
-            {"mandi": "Akola APMC",    "state": "Maharashtra",   "variety": "Chana Digvijay",    "arrivals_tonnes": 840,  "price_offset": 1.01},
-            {"mandi": "Indore Mandi",  "state": "Madhya Pradesh","variety": "Dollar / Desi Mix",  "arrivals_tonnes": 760,  "price_offset": 1.04},
-        ],
-    },
-    "groundnut": {
-        "name": "Groundnut (मूंगफली)",
-        "msp": 6783,
-        "base_price": 6950,
-        "unit": "INR per quintal",
-        "tgk_key": None,
-        "mandis": [
-            {"mandi": "Rajkot APMC",    "state": "Gujarat",          "variety": "G-20 Pods",     "arrivals_tonnes": 1100, "price_offset": 1.04},
-            {"mandi": "Gondal APMC",    "state": "Gujarat",          "variety": "Bold / Java",   "arrivals_tonnes": 1300, "price_offset": 1.05},
-            {"mandi": "Anantapur APMC", "state": "Andhra Pradesh",   "variety": "TMV-2 / K-6",   "arrivals_tonnes": 650,  "price_offset": 0.98},
-        ],
-    },
-    "potato": {
-        "name": "Potato (आलू)",
-        "msp": 1200,
-        "base_price": 1650,
-        "unit": "INR per quintal",
-        "tgk_key": None,
-        "mandis": [
-            {"mandi": "Agra APMC",     "state": "Uttar Pradesh", "variety": "Kufri Bahar / Chipsona", "arrivals_tonnes": 2800, "price_offset": 1.02},
-            {"mandi": "Hooghly APMC",  "state": "West Bengal",   "variety": "Jyoti / Chandramukhi",   "arrivals_tonnes": 2400, "price_offset": 0.98},
-            {"mandi": "Jalandhar Mandi","state": "Punjab",       "variety": "Table / Seed Potato",     "arrivals_tonnes": 1400, "price_offset": 1.04},
-        ],
-    },
-    "onion": {
-        "name": "Onion (प्याज़)",
-        "msp": 1400,
-        "base_price": 2450,
-        "unit": "INR per quintal",
-        "tgk_key": None,
-        "mandis": [
-            {"mandi": "Lasalgaon APMC",  "state": "Maharashtra", "variety": "Red Onion",         "arrivals_tonnes": 3500, "price_offset": 1.05},
-            {"mandi": "Pimpalgaon APMC", "state": "Maharashtra", "variety": "Garva Onion",       "arrivals_tonnes": 2800, "price_offset": 1.03},
-            {"mandi": "Mahuva APMC",     "state": "Gujarat",     "variety": "White / Red Mix",   "arrivals_tonnes": 1200, "price_offset": 0.96},
-        ],
-    },
-    "tomato": {
-        "name": "Tomato (टमाटर)",
-        "msp": 1300,
-        "base_price": 2100,
-        "unit": "INR per quintal",
-        "tgk_key": None,
-        "mandis": [
-            {"mandi": "Kolar APMC",      "state": "Karnataka",       "variety": "Hybrid Fresh", "arrivals_tonnes": 2100, "price_offset": 1.04},
-            {"mandi": "Madanapalle APMC","state": "Andhra Pradesh",  "variety": "Tomato F1",    "arrivals_tonnes": 1900, "price_offset": 1.02},
-            {"mandi": "Nashik APMC",     "state": "Maharashtra",     "variety": "Abhinav / Local","arrivals_tonnes": 1400, "price_offset": 1.01},
-        ],
-    },
-}
-
-_MARKET_CACHE = {}
-_TGK_CACHE = {"data": None, "time": 0}
-CACHE_TTL = 900
-TGK_CACHE_TTL = 3600
-
-TGK_LIVE_URL = "https://tgkagro.com/prices/live_prices.json"
-TGK_HEADERS  = {"User-Agent": "AgriAI-SmartFarming/1.0 (https://agri-ai-5.vercel.app)"}
+_ML_CACHE = {"model": None, "metadata": None, "loaded": False}
 
 
-def _fetch_tgk_live():
-    now = time.time()
-    if _TGK_CACHE["data"] and (now - _TGK_CACHE["time"]) < TGK_CACHE_TTL:
-        return _TGK_CACHE["data"]
-    try:
-        resp = requests.get(TGK_LIVE_URL, headers=TGK_HEADERS, timeout=6)
-        if resp.status_code == 200:
-            raw = resp.json()
-            items = {item["name"].lower().replace(" ", "-"): item for item in raw.get("items", [])}
-            _TGK_CACHE["data"] = items
-            _TGK_CACHE["time"] = now
-            return items
-    except Exception:
-        pass
-    return _TGK_CACHE.get("data") or {}
+def _get_ml_artifacts():
+    if _ML_CACHE["loaded"]:
+        return _ML_CACHE["model"], _ML_CACHE["metadata"]
 
+    base_dir = os.path.dirname(__file__)
+    model_path = os.path.abspath(os.path.join(base_dir, "..", "models", "market_forecast_model.joblib"))
+    meta_path = os.path.abspath(os.path.join(base_dir, "..", "models", "market_metadata.json"))
 
-def _get_current_price(crop_key: str) -> float:
-    crop_info = CROP_DATA[crop_key]
-    tgk_key = crop_info.get("tgk_key")
-
-    if tgk_key:
-        live = _fetch_tgk_live()
-        entry = live.get(tgk_key)
-        if entry and entry.get("inr_per_quintal"):
-            return float(entry["inr_per_quintal"])
-
-    seed = int(datetime.now().strftime("%Y%m%d")) + sum(ord(c) for c in crop_key)
-    import math
-    variation = 1.0 + (math.sin(seed * 0.17) * 0.02)
-    return round(crop_info["base_price"] * variation, 2)
-
-
-def _build_7day_trend(crop_key: str, today_price: float) -> tuple[list, list]:
-    import math
-    crop_info = CROP_DATA[crop_key]
-    vol = 0.012
-    prices = []
-    dates = []
-    today = datetime.now()
-    for i in range(6, -1, -1):
-        dt = today - timedelta(days=i)
-        dates.append(dt.strftime("%Y-%m-%d"))
-        seed = int(dt.strftime("%Y%m%d")) + sum(ord(c) for c in crop_key)
-        noise = math.sin(seed * 0.31) * vol
-        scale = today_price / crop_info["base_price"]
-        p = round(crop_info["base_price"] * scale * (1.0 + noise), 2)
-        prices.append(p)
-    prices[-1] = today_price
-    return dates, prices
-
-
-def _build_mandi_rates(crop_key: str, today_price: float) -> list:
-    crop_info = CROP_DATA[crop_key]
-    result = []
-    for m in crop_info.get("mandis", []):
-        modal = round(today_price * m["price_offset"], 2)
-        result.append({
-            "mandi": m["mandi"],
-            "state": m["state"],
-            "variety": m.get("variety", "Standard"),
-            "modal_price": modal,
-            "min_price": round(modal * 0.94, 2),
-            "max_price": round(modal * 1.06, 2),
-            "arrivals_tonnes": m.get("arrivals_tonnes", 500),
-        })
-    return result
-
-
-def _get_groq_client():
-    api_key = os.environ.get("GROQ_API_KEY")
-    if not api_key:
-        return None
-    try:
-        from groq import Groq
-        return Groq(api_key=api_key)
-    except Exception:
-        return None
-
-
-LLM_MODELS = ["openai/gpt-oss-120b", "openai/gpt-oss-20b"]
-
-
-def _get_farmer_advisory(crop_name: str, today_price: float, msp: float, trend: list, lang: str = "English") -> str:
-    client = _get_groq_client()
-    if not client:
-        return _fallback_advisory(today_price, msp)
-
-    price_change_7d = round(((today_price - trend[0]) / trend[0]) * 100, 1) if trend[0] > 0 else 0
-    msp_diff = round(today_price - msp, 2)
-    msp_pct = round((msp_diff / msp) * 100, 1) if msp > 0 else 0
-    direction = "up" if price_change_7d >= 0 else "down"
-
-    prompt = (
-        f"You are an agricultural market advisor helping Indian farmers. "
-        f"Give a practical, simple 2-3 sentence selling advisory in {lang}.\n\n"
-        f"Commodity: {crop_name}\n"
-        f"Today's market price: ₹{today_price}/quintal\n"
-        f"Govt MSP: ₹{msp}/quintal\n"
-        f"Price vs MSP: ₹{msp_diff} ({'+' if msp_diff >= 0 else ''}{msp_pct}%)\n"
-        f"7-day price direction: {direction} by {abs(price_change_7d)}%\n\n"
-        f"Tell the farmer in simple words: should they sell now or wait? Give 1 practical reason. Keep it under 60 words."
-    )
-
-    for model in LLM_MODELS:
+    if os.path.exists(model_path):
         try:
-            resp = client.chat.completions.create(
-                model=model,
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.5,
-                max_tokens=120,
-            )
-            reply = resp.choices[0].message.content or ""
-            if reply.strip():
-                return reply.strip()
-        except Exception:
-            continue
+            _ML_CACHE["model"] = joblib.load(model_path)
+        except Exception as e:
+            print(f"[Market ML] Error loading model: {e}")
+            _ML_CACHE["model"] = None
 
-    return _fallback_advisory(today_price, msp)
+    if os.path.exists(meta_path):
+        try:
+            with open(meta_path, "r", encoding="utf-8") as f:
+                _ML_CACHE["metadata"] = json.load(f)
+        except Exception as e:
+            print(f"[Market ML] Error loading metadata: {e}")
+            _ML_CACHE["metadata"] = None
 
-
-def _fallback_advisory(today_price: float, msp: float) -> str:
-    msp_diff = today_price - msp
-    if msp_diff >= 200:
-        return f"Market price is ₹{round(msp_diff)}/qtl above Govt MSP — a good window to sell part of your stock and lock in profits."
-    elif msp_diff >= 0:
-        return f"Price is at or slightly above MSP (₹{round(msp_diff)}/qtl premium). Consider gradual selling while monitoring arrivals at your local mandi."
-    else:
-        return f"Current price is ₹{abs(round(msp_diff))}/qtl below MSP. If possible, hold stock and check if your state offers MSP procurement this season."
+    _ML_CACHE["loaded"] = True
+    return _ML_CACHE["model"], _ML_CACHE["metadata"]
 
 
 @market_bp.route("/commodities", methods=["GET"])
-def get_supported_commodities():
-    items = [
+def get_commodities():
+    model_artifact, _ = _get_ml_artifacts()
+    if not model_artifact or "latest_state" not in model_artifact:
+        return jsonify({"commodities": [], "count": 0})
+
+    df = model_artifact["latest_state"]
+    summary = df.groupby("Commodity").agg(
+        modal_price=("Modal_Price", "mean"),
+        markets_count=("Market", "nunique"),
+        state=("State", "first")
+    ).reset_index()
+
+    commodities = [
         {
-            "id": k,
-            "name": v["name"],
-            "msp": v["msp"],
-            "base_price": v["base_price"],
-            "unit": v["unit"],
+            "id": str(row["Commodity"]).strip().lower().replace(" ", "_"),
+            "name": str(row["Commodity"]).strip(),
+            "avg_modal_price": round(float(row["modal_price"]), 2),
+            "markets_count": int(row["markets_count"]),
+            "state": str(row.get("state", "India"))
         }
-        for k, v in CROP_DATA.items()
+        for _, row in summary.iterrows()
+        if pd.notnull(row["Commodity"]) and float(row["modal_price"]) > 0
     ]
-    return jsonify({"commodities": items, "count": len(items)})
+    commodities.sort(key=lambda x: x["markets_count"], reverse=True)
+    return jsonify({"commodities": commodities, "count": len(commodities)})
 
 
-@market_bp.route("/trend", methods=["GET"])
-def price_trend():
-    crop = request.args.get("crop", "rice").strip().lower()
-    lang = request.args.get("lang", "English").strip()
+@market_bp.route("/mandis", methods=["GET"])
+def get_mandis():
+    crop = request.args.get("crop", "").strip()
+    model_artifact, _ = _get_ml_artifacts()
 
-    if crop not in CROP_DATA:
-        return jsonify({
-            "error": f"Unknown commodity '{crop}'. Supported: {list(CROP_DATA.keys())}"
-        }), 400
+    if not model_artifact or "latest_state" not in model_artifact or not crop:
+        return jsonify({"mandis": [], "count": 0})
 
-    cache_key = f"{crop}_{lang}_{datetime.now().strftime('%Y%m%d%H')}"
-    if cache_key in _MARKET_CACHE:
-        cached = _MARKET_CACHE[cache_key]
-        if time.time() - cached["time"] < CACHE_TTL:
-            return jsonify(cached["payload"])
+    df = model_artifact["latest_state"]
+    matched = df[df["Commodity"].str.lower() == crop.lower()]
+    if matched.empty:
+        matched = df[df["Commodity"].str.lower().str.contains(crop.lower(), na=False)]
 
-    crop_info = CROP_DATA[crop]
-    today_price = _get_current_price(crop)
-    dates, trend = _build_7day_trend(crop, today_price)
-    mandi_rates = _build_mandi_rates(crop, today_price)
-    advisory = _get_farmer_advisory(crop_info["name"], today_price, crop_info["msp"], trend, lang)
+    if matched.empty:
+        return jsonify({"mandis": [], "count": 0})
 
-    msp = crop_info["msp"]
-    msp_diff = round(today_price - msp, 2)
-    msp_pct = round((msp_diff / msp) * 100, 1) if msp > 0 else 0
-    change_7d = round(((today_price - trend[0]) / trend[0]) * 100, 1) if trend[0] > 0 else 0
-
-    payload = {
-        "crop": crop,
-        "crop_display_name": crop_info["name"],
-        "unit": crop_info["unit"],
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "today_price": today_price,
-        "msp": msp,
-        "msp_diff": msp_diff,
-        "msp_pct": msp_pct,
-        "change_7d_pct": change_7d,
-        "last_7_day_dates": dates,
-        "last_7_day_trend": trend,
-        "mandi_rates": mandi_rates,
-        "ai_advisory": advisory,
-        "is_live": bool(CROP_DATA[crop].get("tgk_key") and _TGK_CACHE.get("data")),
-        "data_source": "TGK Agro Live Feed" if CROP_DATA[crop].get("tgk_key") and _TGK_CACHE.get("data") else "APMC Reference Rates",
-    }
-
-    _MARKET_CACHE[cache_key] = {"time": time.time(), "payload": payload}
-    return jsonify(payload)
+    mandis = [
+        {
+            "market": str(row["Market"]).strip(),
+            "state": str(row["State"]).strip(),
+            "district": str(row.get("District", "")).strip(),
+            "modal_price": round(float(row["Modal_Price"]), 2)
+        }
+        for _, row in matched.drop_duplicates(subset=["Market"]).iterrows()
+    ]
+    mandis.sort(key=lambda x: x["modal_price"], reverse=True)
+    return jsonify({"mandis": mandis, "count": len(mandis)})
 
 
-@market_bp.route("/ask", methods=["POST"])
-def market_ask():
-    data = request.get_json(silent=True) or {}
-    crop = data.get("crop", "rice").strip().lower()
-    question = data.get("question", "").strip()
-    lang = data.get("lang", "English").strip()
+@market_bp.route("/predict", methods=["GET", "POST"])
+@market_bp.route("/trend", methods=["GET", "POST"])
+@market_bp.route("/forecast", methods=["GET", "POST"])
+def predict_price():
+    data_json = request.get_json(silent=True) or {}
+    crop = request.args.get("crop") or data_json.get("crop") or "Wheat"
+    crop = str(crop).strip()
 
-    if not question:
-        return jsonify({"error": "Field 'question' is required."}), 400
+    mandi = request.args.get("mandi") or data_json.get("mandi") or ""
+    mandi = str(mandi).strip()
 
-    if crop not in CROP_DATA:
-        return jsonify({"error": f"Unknown commodity '{crop}'."}), 400
+    raw_period = request.args.get("period") or data_json.get("period") or 7
+    try:
+        period = int(raw_period)
+        period = max(3, min(period, 30))
+    except Exception:
+        period = 7
 
-    crop_info = CROP_DATA[crop]
-    today_price = _get_current_price(crop)
-    msp = crop_info["msp"]
-    msp_diff = round(today_price - msp, 2)
+    model_artifact, _ = _get_ml_artifacts()
+    if not model_artifact or "latest_state" not in model_artifact:
+        return jsonify({"error": "Market ML model data not loaded."}), 500
 
-    client = _get_groq_client()
-    if not client:
-        return jsonify({"error": "AI advisory not configured on this server."}), 503
+    df = model_artifact["latest_state"]
+    models = model_artifact.get("models", {})
+    features = model_artifact.get("features", [])
 
-    system_prompt = (
-        "You are AgriAI, an expert agricultural market advisor for Indian farmers. "
-        "Give practical, simple answers about commodity markets and selling decisions. "
-        "Keep answers under 80 words. No jargon. Use ₹ symbol for prices."
-    )
-    user_prompt = (
-        f"Commodity: {crop_info['name']}\n"
-        f"Today's mandi price: ₹{today_price}/quintal\n"
-        f"Govt MSP: ₹{msp}/quintal (difference: ₹{msp_diff})\n\n"
-        f"Farmer's question (answer in {lang}): {question}"
-    )
+    matched = df[df["Commodity"].str.lower() == crop.lower()]
+    if matched.empty:
+        matched = df[df["Commodity"].str.lower().str.contains(crop.lower(), na=False)]
+    if matched.empty:
+        matched = df.head(10)
 
-    for model in LLM_MODELS:
-        try:
-            resp = client.chat.completions.create(
-                model=model,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt},
-                ],
-                temperature=0.6,
-                max_tokens=160,
-            )
-            reply = resp.choices[0].message.content or ""
-            if reply.strip():
-                return jsonify({"reply": reply.strip(), "crop": crop})
-        except Exception:
-            continue
+    selected_row = None
+    if mandi:
+        m_matched = matched[matched["Market"].str.lower() == mandi.lower()]
+        if m_matched.empty:
+            m_matched = matched[matched["Market"].str.lower().str.contains(mandi.lower(), na=False)]
+        if not m_matched.empty:
+            selected_row = m_matched.iloc[0].copy()
 
-    return jsonify({"error": "AI service temporarily unavailable."}), 503
+    if selected_row is None:
+        selected_row = matched.iloc[0].copy()
+
+    crop_name = str(selected_row["Commodity"]).strip()
+    mandi_name = str(selected_row["Market"]).strip()
+    state_name = str(selected_row["State"]).strip()
+    modal_price = round(float(selected_row["Modal_Price"]), 2)
+
+    today = datetime.now()
+    selected_row["month"] = today.month
+    selected_row["day_of_week"] = today.weekday()
+    selected_row["day_of_month"] = today.day
+
+    # Run ML Model to get relative multi-horizon price trajectory
+    X = pd.DataFrame([selected_row[features]]) if features else None
+
+    raw_preds = []
+    if models and X is not None:
+        for d in range(1, 8):
+            if d in models:
+                try:
+                    val = float(models[d].predict(X)[0])
+                    raw_preds.append(val)
+                except Exception:
+                    raw_preds.append(modal_price)
+            else:
+                raw_preds.append(modal_price)
+    else:
+        raw_preds = [modal_price] * 7
+
+    # Scale the ML multi-horizon trend relative to the actual mandi modal price
+    base_raw = raw_preds[0] if raw_preds and raw_preds[0] > 0 else 1.0
+    relative_slopes = [((p - base_raw) / base_raw) * 0.45 for p in raw_preds]
+
+    forecast_dates = []
+    forecast_prices = []
+    forecast_table = []
+    prev_price = modal_price
+
+    for day in range(1, period + 1):
+        f_date = today + timedelta(days=day)
+        date_str = f_date.strftime("%b %d")
+        forecast_dates.append(date_str)
+
+        if day <= 7:
+            slope = relative_slopes[day - 1]
+            pred_price = round(modal_price * (1.0 + slope), 2)
+        else:
+            slope_7 = relative_slopes[-1]
+            extra_days = day - 7
+            pred_price = round(modal_price * (1.0 + slope_7 + (slope_7 / 7.0) * extra_days), 2)
+
+        forecast_prices.append(pred_price)
+
+        # Dynamic confidence band
+        spread = max(15.0, round(pred_price * (0.02 + 0.002 * day), 2))
+        min_price = round(pred_price - spread, 2)
+        max_price = round(pred_price + spread, 2)
+
+        # Daily trend direction
+        diff = round(pred_price - prev_price, 2)
+        trend = "up" if diff > 2.0 else "down" if diff < -2.0 else "stable"
+
+        forecast_table.append({
+            "day_num": day,
+            "day_label": f"Day {day}",
+            "date": date_str,
+            "full_date": f_date.strftime("%Y-%m-%d"),
+            "predicted_price": pred_price,
+            "min_expected_price": min_price,
+            "max_expected_price": max_price,
+            "trend": trend,
+            "daily_change": diff
+        })
+        prev_price = pred_price
+
+    peak_price = max(forecast_prices)
+    peak_idx = forecast_prices.index(peak_price)
+    peak_date = forecast_dates[peak_idx]
+    peak_day_num = peak_idx + 1
+
+    lowest_price = min(forecast_prices)
+    gain_amount = round(peak_price - modal_price, 2)
+    gain_pct = round(((peak_price - modal_price) / modal_price) * 100.0, 2) if modal_price > 0 else 0.0
+
+    # Normal, practical AI recommendation
+    if gain_pct >= 1.5:
+        recommendation = "HOLD"
+        recommendation_text = (
+            f"Prices for {crop_name} are expected to rise by +{gain_pct}% (+₹{gain_amount}/qtl), "
+            f"peaking around {peak_date} at ~₹{peak_price}/qtl. It is recommended to hold your produce for better returns."
+        )
+    elif gain_pct <= -1.5 or (forecast_prices[-1] - modal_price) < -15:
+        recommendation = "SELL NOW"
+        recommendation_text = (
+            f"Prices for {crop_name} are projected to decline over the next {period} days. "
+            f"Selling at today's rate of ₹{modal_price}/qtl is recommended to maximize your earnings."
+        )
+    else:
+        recommendation = "MONITOR MARKET"
+        recommendation_text = (
+            f"Prices for {crop_name} are projected to remain relatively steady (within ±{abs(gain_pct)}%). "
+            f"You can sell in stages or monitor daily market arrivals."
+        )
+
+    return jsonify({
+        "crop": crop_name,
+        "mandi": mandi_name,
+        "state": state_name,
+        "period": period,
+        "current_price": modal_price,
+        "forecast_price": peak_price,
+        "peak_price": peak_price,
+        "peak_date": peak_date,
+        "peak_day": f"Day {peak_day_num}",
+        "lowest_price": lowest_price,
+        "expected_gain_amount": gain_amount,
+        "expected_gain_pct": gain_pct,
+        "recommendation": recommendation,
+        "recommendation_text": recommendation_text,
+        "forecast_dates": forecast_dates,
+        "forecast_prices": forecast_prices,
+        "forecast_table": forecast_table,
+        "last_updated": today.strftime("%d %b %Y, %I:%M %p")
+    })

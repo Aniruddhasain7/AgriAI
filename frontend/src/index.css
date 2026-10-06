@@ -1762,7 +1762,6 @@ h6 {
   gap: 14px;
 }
 
-
 .mandi-rate-card {
   display: grid;
   grid-template-columns: 1fr auto auto;
@@ -1802,7 +1801,11 @@ h6 {
 
 .commodity-chip.active {
   border: 1.5px solid var(--primary-500);
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.22) 0%, rgba(5, 150, 105, 0.12) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.22) 0%,
+    rgba(5, 150, 105, 0.12) 100%
+  );
   color: var(--primary-400, #34d399);
   font-weight: 700;
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
@@ -1815,7 +1818,11 @@ h6 {
 .selected-commodity-banner {
   margin-top: 14px;
   padding: 12px 16px;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(5, 150, 105, 0.05) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.12) 0%,
+    rgba(5, 150, 105, 0.05) 100%
+  );
   border: 1px solid rgba(16, 185, 129, 0.28);
   border-radius: var(--radius-sm);
   display: flex;
@@ -2279,3 +2286,4 @@ h6 {
 [data-theme="dark"] .chatbot-markdown code {
   background: rgba(255, 255, 255, 0.1);
 }
+

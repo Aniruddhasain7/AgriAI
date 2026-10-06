@@ -278,14 +278,19 @@ export const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     }),
+  getMarketCommodities: () =>
+    request("/market/commodities"),
+  getMarketMandis: (crop) =>
+    request(`/market/mandis?crop=${encodeURIComponent(crop)}`),
+  getMarketPrediction: (crop, mandi = "", period = 7, lang = "English", currentPrice = "") => {
+    let url = `/market/predict?crop=${encodeURIComponent(crop)}&mandi=${encodeURIComponent(mandi)}&period=${period}&lang=${encodeURIComponent(lang)}`;
+    if (currentPrice) url += `&current_price=${encodeURIComponent(currentPrice)}`;
+    return request(url);
+  },
   getMarketTrend: (crop, lang = "English") =>
-    request(`/market/trend?crop=${crop}&lang=${encodeURIComponent(lang)}`),
-  askMarketQuestion: (crop, question, lang = "English") =>
-    request("/market/ask", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ crop, question, lang }),
-    }),
+    request(`/market/predict?crop=${encodeURIComponent(crop)}&lang=${encodeURIComponent(lang)}`),
+  getMarketForecast: (crop, mandi = "", period = 7, lang = "English") =>
+    request(`/market/predict?crop=${encodeURIComponent(crop)}&mandi=${encodeURIComponent(mandi)}&period=${period}&lang=${encodeURIComponent(lang)}`),
   recommendCrop: (payload) =>
     request("/crop/recommend", {
       method: "POST",

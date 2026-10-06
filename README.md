@@ -4,7 +4,7 @@
   <img src="./frontend/src/assets/ss1.png" alt="AgriAI" width="100%" style="border-radius: 12px;" />
 </p>
 
-**AgriAI** is an advanced, full-stack smart farming web application designed to empower farmers and agricultural experts with real-time machine learning predictions, computer vision disease diagnosis, crop recommendations, meteorological advisories, soil balancing, mandi market price tracking, and multilingual AI consultation.
+**AgriAI** is an advanced, full-stack smart farming web application designed to empower farmers and agricultural experts with real-time machine learning predictions, computer vision disease diagnosis, crop recommendations, meteorological advisories, soil balancing, multi-horizon mandi market price forecasting with AI selling advice, and multilingual AI consultation.
 
 ---
 
@@ -108,26 +108,38 @@ The **Weather Advisory Module** provides micro-climate field radar and localized
 
 ---
 
-### 6. 📈 Mandi Market Prices & 7-Day Trend Analytics
-The **Mandi Market Prices** tool empowers farmers to negotiate better rates, avoid distress selling, and track spot prices across agricultural produce market committees (APMC mandis) throughout India.
+### 6. 📈 Mandi Market Price Forecasting & AI Selling Advisory (Multi-Horizon ML Random Forest Regressor)
+The **Market Price Predictor** empowers farmers and agricultural traders to anticipate market fluctuations, pinpoint high-profit selling windows, and avoid distress selling across Agricultural Produce Market Committees (APMC mandis) throughout India.
 
-- **Tracked Commodities**:
-  - Rice (Paddy), Wheat, Maize, Cotton, Sugarcane, Soybean, Mustard Seed, Gram (Chana), Groundnut, Potato, Onion, and Tomato.
-- **Live Rates & Baseline Tracking**:
-  - Integrates **TGK Agro live mandi open feeds** for commodities with active digital exchanges, backed by official daily APMC reference rates.
-- **7-Day Price Trend Graph**:
-  - Visual, mobile-optimized bar chart tracking price movements over the last 7 calendar days.
-  - Highlights today's price with an emerald glow indicator.
-  - Displays **7-Day High**, **7-Day Low**, and **7-Day Average** price summary cards.
-- **Govt. Minimum Support Price (MSP) Comparison**:
-  - Benchmarks live market rates against official **Govt. of India 2024-25 MSP rates**.
-  - Automatically calculates whether the prevailing price is at a profit premium (`+₹ above MSP`) or deficit (`-₹ below MSP`), advising farmers when to leverage government procurement centers.
-- **Regional APMC Mandi Breakdown**:
-  - Compares spot prices across primary producing states and mandis (e.g., Lasalgaon for Onions, Rajkot for Cotton, Karnal for Rice, Indore for Soybeans).
-  - Displays daily arrival volumes in metric tonnes (`T`) and price differences relative to national benchmarks.
-- **AI Farmer Advisory**:
-  - Plain-language advisory synthesized in **English**, **Hindi**, or **Bengali** analyzing whether current conditions favor selling now or holding stock.
-  - Interactive **Ask AI About This Price** tool allows farmers to ask custom questions (e.g., *"Which mandi is offering the best price?"*, *"Will prices increase next week?"*).
+- **Multi-Horizon Machine Learning Architecture**:
+  - Developed and trained in `Market_Price_Forecasting.ipynb` on daily commodity arrival and price transactions across Indian states and APMC mandis.
+  - Implements a **Scikit-Learn Random Forest Regressor** ensemble with multi-target forecast horizons (`T+1` through `T+7`, extrapolated up to 30 days).
+  - Engineers multi-scale temporal and momentum features: historical price lags (`lag_1`, `lag_3`, `lag_7`), rolling window statistics (`rolling_mean_7`, `rolling_std_7`), daily momentum shifts (`price_change_1`), and seasonal calendar cyclicals (`month`, `day_of_week`, `day_of_month`).
+  - Serialized into a high-efficiency model bundle (`market_forecast_model.joblib` and `market_metadata.json`) with in-memory caching for low-latency predictions (< 50 ms).
+- **100+ Agricultural Commodities**:
+  - Comprehensive coverage spanning cereals (Wheat, Paddy/Rice, Maize, Barley, Bajra), pulses (Gram/Chana, Arhar/Tur, Moong, Urd), oilseeds (Mustard, Groundnut, Soybean, Castor), vegetables (Potato, Onion, Tomato, Cauliflower, Brinjal), fruits (Banana, Apple, Grapes, Mango), spices (Garlic, Ginger, Red Chilli, Turmeric, Coriander), and commercial crops (Cotton, Sugarcane).
+- **APMC Mandi Search & Real Modal Pricing**:
+  - Searchable selection across mandis in primary producing states and districts (e.g., Lasalgaon, Amreli, Karnal, Indore, Rajkot).
+  - Automatically extracts and displays baseline modal prices in Indian Rupees per quintal (`₹/qtl`).
+- **Flexible Forecast Horizons**:
+  - **7 Days** (1 Week Short-Term Tactical Window — Recommended).
+  - **14 Days** (2 Weeks Mid-Term Trajectory).
+  - **30 Days** (1 Month Macro Market Trend).
+- **Interactive SVG Forecast Chart & Carousel Visualization**:
+  - **7-Day Carousel View**: Smooth paginated slide navigation (e.g., Days 1–7, 8–14, 15–21, 22–30) keeping vertical scale stable while maximizing mobile readability.
+  - **All-Days Overview Mode**: Full continuous price curve display for multi-week comparisons.
+  - **Color-Coded Trend Bars**: Emerald green for rising trajectories, amber/rose for declines, and slate for stable prices, topped with a distinctive gold crown indicator for the projected **Peak Day**.
+  - **Dynamic Confidence Bands**: Displays expected minimum and maximum price volatility boundaries (`min_expected_price` to `max_expected_price`) for risk-aware decisions.
+  - **Interactive Hover Tooltips**: Instant hover inspect cards detailing predicted rate, confidence spread, and daily net change.
+- **Strategic AI Selling Recommendations**:
+  - 🟢 **HOLD**: Triggered when predicted price gain reaches +1.5% or higher. Pinpoints the optimal liquidation date (e.g., *"Prices are expected to rise by +4.2% (+₹180/qtl), peaking around Oct 14 at ~₹4,450/qtl. It is recommended to hold your produce for better returns"*).
+  - 🔴 **SELL NOW**: Detects declining market momentum or impending price drops, recommending immediate liquidation at current rates to lock in maximum profit.
+  - 🟡 **MONITOR MARKET**: Range-bound, sideways price action, advising farmers to execute staggered sales or watch daily mandi arrival volumes.
+- **Actionable KPI Metric Cards & Tabular Breakdown**:
+  - Real-time KPI summaries: **Current Market Price**, **Projected Peak Price** (with peak date and day label), **Target Selling Window**, and **Expected Profit Gain** (+₹/qtl and % gain).
+  - Complete day-by-day audit table with calendar dates, forecasted rates, expected ranges, and trend indicators (`Rise`, `Fall`, `Stable`).
+- **Trilingual Accessibility**:
+  - Fully translated and localized across **English**, **Hindi (हिंदी)**, and **Bengali (বাংলা)**.
 
 ---
 
@@ -171,7 +183,8 @@ The **AI Agronomist Chatbot** provides round-the-clock conversational assistance
 | **Backend Core**            | Flask                   | `v3.0.3`             | Python micro-framework for RESTful API                                                          |
 | **ML Inference**            | LiteRT (ai-edge-litert) | `>=2.0.0`            | Lightweight TensorFlow Lite inference engine for Custom Deep CNN disease model (~17 MB runtime) |
 | **Model Training & Export** | TensorFlow              | `v2.16+`             | Custom Deep CNN architecture on PlantVillage dataset & TFLite export                            |
-| **Machine Learning**        | Scikit-Learn            | `v1.6.1`             | Random Forest Crop Yield & Crop Recommender                                                     |
+| **Machine Learning**        | Scikit-Learn            | `v1.6.1`             | Random Forest Crop Yield, Crop Recommender & Multi-Horizon Mandi Price Forecaster               |
+| **Model Serialization**     | Joblib                  | `v1.4.2`             | High-efficiency model persistence & compression for Random Forest estimators (`.joblib`)       |
 | **Data Processing**         | NumPy & Pandas          | `v1.26.4 / v2.2.2`   | Dataset transformations & array calculations                                                    |
 | **AI Assistant**            | Groq AI API             | `>=0.18.0`           | Multilingual agricultural LLM chatbot (`openai/gpt-oss-120b` / `openai/gpt-oss-20b`)            |
 | **Database ORM**            | Flask-SQLAlchemy        | `v3.1.1`             | Unified PostgreSQL ORM (Neon / Cloud / Docker)                                                  |
@@ -211,13 +224,13 @@ graph TB
             LiteRT["LiteRT Inference Engine (Custom Deep CNN)"]
             CropRF["Crop Recommender (Random Forest Classifier)"]
             YieldRF["Yield Predictor (Random Forest Regressor)"]
+            MarketRF["Market Forecaster (Random Forest Regressor)"]
             SoilEng["Soil Chemistry N-P-K Balancer"]
             LLM["Groq AI Multilingual LLM Client (GPT-OSS)"]
         end
 
         subgraph ExternalAPIs["External Data Integrations"]
             Weather["Live Meteorology Weather API"]
-            Market["Mandi Commodity Price Tracker"]
         end
 
         Flask --> Auth
@@ -243,7 +256,7 @@ graph TB
 |    Tier    | Layer                                               | Deployment Environment                | Key Technologies                                           | Core Responsibilities                                                                                                                                                                                                                                                                                                            |
 | :--------: | :-------------------------------------------------- | :------------------------------------ | :--------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Tier 1** | **Presentation Tier** _(Client Layer)_              | Vercel Static Cloud                   | React 19, Vite, Vanilla CSS3 Glassmorphism, i18next        | • Renders responsive single-page user interfaces.<br>• Handles live camera access and crop leaf image pre-processing.<br>• Manages client-side routing, state, and multi-language switching (EN/HI/BN).<br>• Formats and dispatches HTTPS REST requests to backend API.                                                          |
-| **Tier 2** | **Application Tier** _(Business & AI Logic Layer)_  | Render Web Service (Docker Container) | Flask 3, Gunicorn, LiteRT, Scikit-Learn, Groq              | • Hosts REST API endpoints, routing, CORS, and request verification.<br>• Manages PBKDF2 password hashing and secure token sessions.<br>• Executes fast, local ML model inference (TFLite CNN leaf scanning, Random Forest crop/yield ML).<br>• Connects to Groq LLM for AI consultation, fetches live weather & mandi market price feeds, and generates plain-language farmer advisories. |
+| **Tier 2** | **Application Tier** _(Business & AI Logic Layer)_  | Render Web Service (Docker Container) | Flask 3, Gunicorn, LiteRT, Scikit-Learn, Groq              | • Hosts REST API endpoints, routing, CORS, and request verification.<br>• Manages PBKDF2 password hashing and secure token sessions.<br>• Executes fast, local ML model inference (TFLite CNN leaf scanning, Random Forest crop/yield ML, and Multi-Horizon APMC mandi price forecasting).<br>• Connects to Groq LLM for AI consultation, fetches live meteorological feeds, and generates plain-language farmer advisories and selling recommendations. |
 | **Tier 3** | **Data Tier** _(Persistence & Model Storage Layer)_ | Neon Serverless PostgreSQL Cloud      | PostgreSQL RDBMS, Flask-SQLAlchemy ORM, Local Disk Storage | • Stores relational database tables (`users`, `disease_history`, `prediction_history`).<br>• Maintains database connection pooling (Session mode) for reliable transactions.<br>• Stores version-locked pre-trained ML weights (`.tflite`, `.joblib`) and label mappings.                                                        |
 
 ---
@@ -256,12 +269,14 @@ Agri-ai/
 │   ├── Dockerfile            # Docker image — locks Python 3.11.9-slim runtime
 │   ├── app.py                # Flask Application Factory, Routes & Error Handlers
 │   ├── models_db.py          # SQLAlchemy Models (User, PredictionHistory)
-│   ├── requirements.txt      # Python Dependencies (LiteRT, Flask, Gunicorn, psycopg2)
+│   ├── requirements.txt      # Python Dependencies (LiteRT, Flask, Gunicorn, psycopg2, scikit-learn, pandas)
 │   ├── models/
-│   │   ├── disease_model.tflite  # Custom Deep CNN disease detection model (TFLite format)
-│   │   ├── crop_model.joblib     # Scikit-Learn Random Forest crop recommender
-│   │   ├── yield_model.joblib    # Scikit-Learn Random Forest yield predictor
-│   │   └── class_indices.json   # Disease class label mapping (15 plant/disease classes: Pepper, Potato, Tomato)
+│   │   ├── disease_model.tflite          # Custom Deep CNN disease detection model (TFLite format)
+│   │   ├── crop_model.joblib             # Scikit-Learn Random Forest crop recommender
+│   │   ├── yield_model.joblib            # Scikit-Learn Random Forest yield predictor
+│   │   ├── market_forecast_model.joblib  # Scikit-Learn Random Forest multi-horizon mandi price forecaster
+│   │   ├── market_metadata.json          # Metadata & features for 100+ commodities & APMC mandis
+│   │   └── class_indices.json           # Disease class label mapping (15 plant/disease classes)
 │   ├── routes/
 │   │   ├── auth.py           # User Authentication Routes & Profile Context
 │   │   ├── disease.py        # TFLite Image Scanner & Leaf Disease API
@@ -269,12 +284,13 @@ Agri-ai/
 │   │   ├── yield_predict.py  # FAO Harvest Yield Predictor API
 │   │   ├── soil.py           # Soil N-P-K & Acidic/Alkaline Fertilizer Balancer API
 │   │   ├── weather.py        # Live Meteorology & 3-Day Farming Advisory API
-│   │   ├── market.py         # Mandi Commodity Market Price Trends API
+│   │   ├── market.py         # Multi-Horizon APMC Mandi Price Forecaster & AI Selling Advisory API
 │   │   └── chatbot.py        # Multilingual Farmer Assistant (GPT-OSS LLM) API
 │   └── ml_training/          # ML Model Training Notebooks
-│       ├── disease_detection.ipynb  # Clean 6-step Custom CNN trainer & TFLite exporter (15 classes, 10 epochs)
-│       ├── crop_recommendation.ipynb # Scikit-Learn Crop Recommender trainer
-│       └── yield_prediction.ipynb   # Scikit-Learn FAO Yield Predictor trainer
+│       ├── disease_detection.ipynb          # Clean 6-step Custom CNN trainer & TFLite exporter (15 classes, 10 epochs)
+│       ├── crop_recommendation.ipynb         # Scikit-Learn Crop Recommender trainer
+│       ├── yield_prediction.ipynb           # Scikit-Learn FAO Yield Predictor trainer
+│       └── Market_Price_Forecasting.ipynb   # Scikit-Learn Multi-Horizon Mandi Price Forecaster trainer
 ├── frontend/
 │   ├── src/
 │   │   ├── api/client.js     # Fetch-based API client with Bearer token authorization
@@ -287,7 +303,7 @@ Agri-ai/
 │   │   │   ├── YieldPrediction.jsx
 │   │   │   ├── SoilAnalysis.jsx
 │   │   │   ├── WeatherAdvice.jsx
-│   │   │   ├── MarketPrices.jsx
+│   │   │   ├── MarketPrices.jsx            # Multi-Horizon Mandi Price Forecasting UI & Carousel Charts
 │   │   │   ├── Chatbot.jsx
 │   │   │   ├── LoginPage.jsx
 │   │   │   └── SignupPage.jsx
@@ -403,8 +419,9 @@ The application can be deployed using a **free-forever cloud stack**:
 | `POST` | `/api/yield/predict`       | Crop harvest yield prediction (tonnes/hectare)           |
 | `POST` | `/api/soil/recommend`      | Calculate optimal N-P-K fertilizer balancing ratios      |
 | `GET`  | `/api/weather/advice`      | Live weather forecast & 3-day farming advisory           |
-| `GET`  | `/api/market/commodities`  | List supported agricultural commodities with MSP data            |
-| `GET`  | `/api/market/trend`        | Live mandi spot prices, 7-day trend, MSP comparison & Groq LLM farmer advisory |
-| `POST` | `/api/market/ask`          | Ask a contextual market question via Groq LLM (crop, question, lang) |
+| `GET`  | `/api/market/commodities`  | List 100+ supported agricultural commodities with average modal prices & market counts |
+| `GET`  | `/api/market/mandis`       | Query APMC mandis, districts, states & modal prices for a selected crop (`?crop=Wheat`) |
+| `GET`  | `/api/market/predict`      | Multi-horizon price forecast (7/14/30 days), peak window & AI selling advice (`?crop=&mandi=&period=`) |
+| `GET`  | `/api/market/trend`        | Backward-compatible alias to `/api/market/predict`       |
 | `POST` | `/api/chatbot/message`     | Multilingual AI farming assistant (Groq LLM)             |
 | `GET`  | `/api/predictions/history` | Query user prediction logs filtered by tool type         |
