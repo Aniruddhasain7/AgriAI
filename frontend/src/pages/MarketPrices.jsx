@@ -39,7 +39,6 @@ function BarChart({
   const isMultiSlide = data.length > SLIDE_SIZE;
   const totalSlides = Math.ceil(data.length / SLIDE_SIZE);
 
-  // Fallback state if handlers not passed
   const [internalSlide, setInternalSlide] = useState(0);
   const [internalMode, setInternalMode] = useState("carousel");
   const curSlide = setActiveSlide ? activeSlide : internalSlide;
@@ -62,7 +61,6 @@ function BarChart({
   const padT = 30;
   const padB = 48;
 
-  // GLOBAL min and max across all days to keep vertical scale stable across slides
   const prices = data.map((d) => d.predicted_price);
   const allVals = [currentPrice, ...prices];
   const minVal = Math.floor(Math.min(...allVals) * 0.98);
@@ -89,7 +87,6 @@ function BarChart({
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
-      {/* Carousel Header Controls */}
       {isMultiSlide && (
         <div
           style={{
@@ -105,7 +102,6 @@ function BarChart({
             gap: 10,
           }}
         >
-          {/* Active slide badge */}
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span
               style={{
@@ -157,7 +153,6 @@ function BarChart({
             )}
           </div>
 
-          {/* View Mode Switcher and Carousel Navigation */}
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div
               style={{
@@ -271,7 +266,6 @@ function BarChart({
         </div>
       )}
 
-      {/* SVG Bar Chart */}
       <div style={{ position: "relative", width: "100%", overflowX: "auto" }}>
         <svg
           viewBox={`0 0 ${W} ${H}`}
@@ -296,7 +290,6 @@ function BarChart({
             </linearGradient>
           </defs>
 
-          {/* Y-axis grid lines and labels */}
           {yTicks.map((tick, i) => {
             const y = toY(tick);
             return (
@@ -325,7 +318,6 @@ function BarChart({
             );
           })}
 
-          {/* Today's price baseline */}
           <line
             x1={padL}
             y1={toY(currentPrice)}
@@ -335,7 +327,6 @@ function BarChart({
             strokeWidth={1.5}
             strokeDasharray="4 3"
           />
-          {/* Baseline badge on left Y-axis margin */}
           <rect
             x={padL - 56}
             y={toY(currentPrice) - 8}
@@ -357,7 +348,6 @@ function BarChart({
             ₹{Math.round(currentPrice).toLocaleString("en-IN")}
           </text>
 
-          {/* Bars */}
           {visibleData.map((row, i) => {
             const x = toX(i);
             const y = toY(row.predicted_price);
@@ -390,7 +380,6 @@ function BarChart({
                   />
                 )}
 
-                {/* Bar */}
                 <rect
                   x={x - barW / 2}
                   y={y}
@@ -415,7 +404,6 @@ function BarChart({
                   onMouseLeave={() => setTooltip(null)}
                 />
 
-                {/* Price text over bar - only when comfortable (<= 8 bars) */}
                 {showBarPrice && (
                   <text
                     x={x}
@@ -429,7 +417,6 @@ function BarChart({
                   </text>
                 )}
 
-                {/* X-axis labels (never overlap) */}
                 {showLabel && (
                   <g>
                     <text
@@ -457,7 +444,6 @@ function BarChart({
             );
           })}
 
-          {/* Tooltip */}
           {tooltip && (
             <g>
               <rect
@@ -509,7 +495,6 @@ function BarChart({
         </svg>
       </div>
 
-      {/* Carousel Jump Pills */}
       {isMultiSlide && isCarousel && totalSlides > 1 && (
         <div
           style={{
@@ -554,7 +539,6 @@ function BarChart({
         </div>
       )}
 
-      {/* Legend */}
       <div
         style={{
           display: "flex",
@@ -654,7 +638,6 @@ export default function MarketPrices() {
     setActiveSlide(0);
   }, [period, selectedCrop]);
 
-  // Load available commodities on mount and initialize with default crop and mandi
   useEffect(() => {
     let active = true;
     api
@@ -684,7 +667,6 @@ export default function MarketPrices() {
     };
   }, []);
 
-  // Execute price prediction
   const fetchPrediction = async (crop, mandi, p) => {
     if (!crop || !mandi) return;
     setLoading(true);
@@ -720,7 +702,6 @@ export default function MarketPrices() {
     api.getMarketMandis(newCrop).then((res) => {
       if (res?.mandis) {
         setMandisList(res.mandis);
-        // Only keep the chosen mandi if it's traded in this crop's mandis list; otherwise let the user pick
         setSelectedMandi((prevMandi) => {
           if (prevMandi) {
             const exists = res.mandis.some(
@@ -739,7 +720,6 @@ export default function MarketPrices() {
   const gainAmount = Number(result?.expected_gain_amount || 0);
   const gainPct = Number(result?.expected_gain_pct || 0);
 
-  // Recommendation Badge style config
   const recBadgeMap = {
     HOLD: {
       bg: "rgba(16, 185, 129, 0.12)",
@@ -801,7 +781,6 @@ export default function MarketPrices() {
 
   return (
     <div style={{ maxWidth: "920px", margin: "0 auto", paddingBottom: 48 }}>
-      {/* Page Header */}
       <div className="page-header" style={{ marginBottom: 22 }}>
         <div className="page-badge">
           <Sparkles size={14} />
@@ -818,7 +797,6 @@ export default function MarketPrices() {
         </p>
       </div>
 
-      {/* Form Card */}
       <div
         className="glass-card"
         style={{ padding: "20px 22px", marginBottom: 24 }}
@@ -831,7 +809,6 @@ export default function MarketPrices() {
               gap: 16,
             }}
           >
-            {/* Crop Dropdown */}
             <div className="form-group" style={{ margin: 0 }}>
               <label
                 className="form-label"
@@ -853,7 +830,6 @@ export default function MarketPrices() {
               </select>
             </div>
 
-            {/* Mandi Dropdown */}
             <div className="form-group" style={{ margin: 0 }}>
               <label
                 className="form-label"
@@ -884,7 +860,6 @@ export default function MarketPrices() {
               </select>
             </div>
 
-            {/* Forecast Days Dropdown */}
             <div className="form-group" style={{ margin: 0 }}>
               <label
                 className="form-label"
@@ -939,7 +914,6 @@ export default function MarketPrices() {
         </form>
       </div>
 
-      {/* Error Alert */}
       {error && (
         <div
           style={{
@@ -960,10 +934,8 @@ export default function MarketPrices() {
         </div>
       )}
 
-      {/* Prediction Results */}
       {result && (
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          {/* Key Metric Summary Cards */}
           <div
             style={{
               display: "grid",
@@ -971,7 +943,6 @@ export default function MarketPrices() {
               gap: 14,
             }}
           >
-            {/* Card 1: Current Price */}
             <div
               className="glass-card"
               style={{
@@ -1026,7 +997,6 @@ export default function MarketPrices() {
               </div>
             </div>
 
-            {/* Card 2: Projected Peak Price */}
             <div
               className="glass-card"
               style={{
@@ -1086,7 +1056,6 @@ export default function MarketPrices() {
               </div>
             </div>
 
-            {/* Card 3: AI Recommendation Badge */}
             <div
               className="glass-card"
               style={{
@@ -1139,7 +1108,6 @@ export default function MarketPrices() {
             </div>
           </div>
 
-          {/* Bar Chart Section */}
           <div className="glass-card" style={{ padding: "20px 22px" }}>
             <div
               style={{
@@ -1195,7 +1163,6 @@ export default function MarketPrices() {
             />
           </div>
 
-          {/* Recommendation Narrative Card */}
           <div
             className="glass-card"
             style={{
@@ -1228,7 +1195,6 @@ export default function MarketPrices() {
             </div>
           </div>
 
-          {/* Day-by-Day Forecast Breakdown Table */}
           {forecastRows.length > 0 && (
             <div className="glass-card" style={{ padding: "18px 20px" }}>
               <div

@@ -148,7 +148,6 @@ def predict_price():
     selected_row["day_of_week"] = today.weekday()
     selected_row["day_of_month"] = today.day
 
-    # Run ML Model to get relative multi-horizon price trajectory
     X = pd.DataFrame([selected_row[features]]) if features else None
 
     raw_preds = []
@@ -165,7 +164,6 @@ def predict_price():
     else:
         raw_preds = [modal_price] * 7
 
-    # Scale the ML multi-horizon trend relative to the actual mandi modal price
     base_raw = raw_preds[0] if raw_preds and raw_preds[0] > 0 else 1.0
     relative_slopes = [((p - base_raw) / base_raw) * 0.45 for p in raw_preds]
 
@@ -189,12 +187,10 @@ def predict_price():
 
         forecast_prices.append(pred_price)
 
-        # Dynamic confidence band
         spread = max(15.0, round(pred_price * (0.02 + 0.002 * day), 2))
         min_price = round(pred_price - spread, 2)
         max_price = round(pred_price + spread, 2)
 
-        # Daily trend direction
         diff = round(pred_price - prev_price, 2)
         trend = "up" if diff > 2.0 else "down" if diff < -2.0 else "stable"
 
@@ -220,7 +216,6 @@ def predict_price():
     gain_amount = round(peak_price - modal_price, 2)
     gain_pct = round(((peak_price - modal_price) / modal_price) * 100.0, 2) if modal_price > 0 else 0.0
 
-    # Normal, practical AI recommendation
     if gain_pct >= 1.5:
         recommendation = "HOLD"
         recommendation_text = (
